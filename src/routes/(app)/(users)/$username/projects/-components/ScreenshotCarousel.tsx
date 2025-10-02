@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Carousel,
@@ -7,13 +6,13 @@ import {
   type CarouselApi,
 } from '@/components/ui/carousel'
 import { useEffect, useState } from 'react'
-import {
-  HiMiniChevronLeft,
-  HiMiniChevronRight,
-  HiOutlineDevicePhoneMobile,
-} from 'react-icons/hi2'
+import { HiOutlineDevicePhoneMobile, HiOutlineTv } from 'react-icons/hi2'
 
-export default function ScreenshotCarousel() {
+interface ScreenshotCarouselProps {
+  type: 'mobile' | 'desktop'
+}
+
+export default function ScreenshotCarousel({ type }: ScreenshotCarouselProps) {
   const [api, setApi] = useState<CarouselApi>()
 
   useEffect(() => {
@@ -32,14 +31,23 @@ export default function ScreenshotCarousel() {
       opts={{
         align: 'start',
       }}
-      className="w-full space-y-2"
+      className="w-full space-y-2 last:mt-4"
     >
       <CarouselContent className="-ml-2">
         {Array.from({ length: 5 }).map((_, index) => (
-          <CarouselItem key={index} className="basis-3/4 pl-2">
+          <CarouselItem
+            key={index}
+            data-type={type}
+            className="pl-2 data-[type=desktop]:basis-11/12 data-[type=mobile]:basis-3/4"
+          >
             <div className="p-1">
               <Card>
-                <CardContent className="flex aspect-[9/16] items-center justify-center p-6">
+                <CardContent
+                  style={{
+                    aspectRatio: type === 'mobile' ? '9/16' : '16/9',
+                  }}
+                  className="flex items-center justify-center p-6"
+                >
                   <span className="text-3xl font-semibold">{index + 1}</span>
                 </CardContent>
               </Card>
@@ -49,16 +57,14 @@ export default function ScreenshotCarousel() {
       </CarouselContent>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <HiOutlineDevicePhoneMobile className="stroke-muted-foreground size-5" />
-          <span className="text-muted-foreground text-sm">Mobile</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button className="rounded-full" variant="outline" size="icon">
-            <HiMiniChevronLeft className="size-6" />
-          </Button>
-          <Button className="rounded-full" variant="outline" size="icon">
-            <HiMiniChevronRight className="size-6" />
-          </Button>
+          {type === 'mobile' ? (
+            <HiOutlineDevicePhoneMobile className="stroke-muted-foreground size-5" />
+          ) : (
+            <HiOutlineTv className="stroke-muted-foreground size-5" />
+          )}
+          <span className="text-muted-foreground text-sm capitalize">
+            {type}
+          </span>
         </div>
       </div>
     </Carousel>

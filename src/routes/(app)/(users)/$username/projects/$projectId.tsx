@@ -57,7 +57,8 @@ function RouteComponent() {
         </section>
         <section className="mb-8">
           <h2 className="mb-2 font-semibold">Preview</h2>
-          <ScreenshotCarousel />
+          <ScreenshotCarousel type="mobile" />
+          <ScreenshotCarousel type="desktop" />
         </section>
         <section className="mb-8">
           <h2 className="mb-2 font-semibold">Contribution</h2>
