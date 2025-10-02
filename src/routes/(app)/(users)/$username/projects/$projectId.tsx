@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { HiChevronLeft, HiOutlinePencilSquare } from 'react-icons/hi2'
+import ScreenshotCarousel from './-components/ScreenshotCarousel'
 
 export const Route = createFileRoute(
   '/(app)/(users)/$username/projects/$projectId'
@@ -31,7 +32,7 @@ function RouteComponent() {
   }
   return (
     <div>
-      <header className="bg-background sticky top-0 flex h-12 items-center justify-between">
+      <header className="bg-background sticky top-0 z-50 flex h-12 items-center justify-between">
         <Button variant="ghost" size="icon" asChild>
           <Link
             to="/$username/projects"
@@ -53,6 +54,10 @@ function RouteComponent() {
           <p className="text-muted-foreground text-sm whitespace-pre-line">
             {PROJECT.overview}
           </p>
+        </section>
+        <section className="mb-8">
+          <h2 className="mb-2 font-semibold">Preview</h2>
+          <ScreenshotCarousel />
         </section>
         <section className="mb-8">
           <h2 className="mb-2 font-semibold">Contribution</h2>
