@@ -6,6 +6,7 @@ import {
   HiCheckBadge,
   HiOutlineBriefcase,
   HiOutlineCalendar,
+  HiOutlineEnvelope,
   HiOutlineLink,
   HiOutlineMapPin,
 } from 'react-icons/hi2'
@@ -20,7 +21,10 @@ export default function ProfileLayout({ children }: PropsWithChildren) {
             <div className="bg-accent outline-border/30 aspect-square size-24 overflow-hidden rounded-full outline-3">
               <img src={USER.avatar} alt={`${USER.name} avatar`} />
             </div>
-            <div>
+            <div className="flex items-center gap-2">
+              <Button className="size-8" variant="outline" size="icon">
+                <HiOutlineEnvelope />
+              </Button>
               <Button variant="outline" size="sm">
                 Edit profile
               </Button>
@@ -61,13 +65,23 @@ export default function ProfileLayout({ children }: PropsWithChildren) {
         </ul>
 
         <ul className="flex items-center gap-4">
-          <li className="flex items-center gap-1 text-sm">
+          <li className="relative flex items-center gap-1 text-sm">
+            <Link
+              className="absolute inset-0"
+              to="/$username/connections/following"
+              params={{ username: '33se7en' }}
+            ></Link>
             <span className="font-bold">
               {formatNumberCompact(USER.following)}
             </span>
             <span className="text-muted-foreground">Following</span>
           </li>
-          <li className="flex items-center gap-1 text-sm">
+          <li className="relative flex items-center gap-1 text-sm">
+            <Link
+              className="absolute inset-0"
+              to="/$username/connections/followers"
+              params={{ username: '33se7en' }}
+            ></Link>
             <span className="font-bold">
               {formatNumberCompact(USER.followers)}
             </span>

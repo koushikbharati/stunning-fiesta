@@ -3,14 +3,17 @@ import NoDataFound from '../-components/no-data-found'
 import MainLayout from '@/routes/(app)/-components/MainLayout'
 import ProfileLayout from '../-components/ProfileLayout'
 import Title from '../-components/Title'
-import { Button } from '@/components/ui/button'
 import { timeAgo } from '@/utils/DateFormat'
+import { useState } from 'react'
+import FiltersList from './-components/FiltersList'
 
 export const Route = createFileRoute('/(app)/(users)/$username/projects/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const [filter, setFilter] = useState('latest')
+
   if (!PROJECTS.length)
     return (
       <NoDataFound
@@ -18,22 +21,16 @@ function RouteComponent() {
         btnText="Add project"
       />
     )
+
   return (
     <MainLayout>
       <ProfileLayout>
         <Title title="Projects" />
         <div>
-          <div className="flex items-center gap-2 px-4 py-2">
-            <Button size="sm" variant="default">
-              Latest
-            </Button>
-            <Button size="sm" variant="outline">
-              Featured
-            </Button>
-            <Button size="sm" variant="outline">
-              Personal
-            </Button>
-          </div>
+          <FiltersList
+            filter={filter}
+            onFilterChange={(filter) => setFilter(filter)}
+          />
           <ul>
             {PROJECTS.map((project) => (
               <li

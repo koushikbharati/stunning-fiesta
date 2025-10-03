@@ -16,8 +16,11 @@ import { Route as appChatsIndexRouteImport } from './routes/(app)/chats/index'
 import { Route as appusersUsernameIndexRouteImport } from './routes/(app)/(users)/$username/index'
 import { Route as appusersUsernameExperienceRouteImport } from './routes/(app)/(users)/$username/experience'
 import { Route as appusersUsernameArticlesRouteImport } from './routes/(app)/(users)/$username/articles'
+import { Route as appusersUsernameConnectionsRouteRouteImport } from './routes/(app)/(users)/$username/connections/route'
 import { Route as appusersUsernameProjectsIndexRouteImport } from './routes/(app)/(users)/$username/projects/index'
 import { Route as appusersUsernameProjectsProjectIdRouteImport } from './routes/(app)/(users)/$username/projects/$projectId'
+import { Route as appusersUsernameConnectionsFollowingRouteImport } from './routes/(app)/(users)/$username/connections/following'
+import { Route as appusersUsernameConnectionsFollowersRouteImport } from './routes/(app)/(users)/$username/connections/followers'
 
 const appIndexRoute = appIndexRouteImport.update({
   id: '/(app)/',
@@ -56,6 +59,12 @@ const appusersUsernameArticlesRoute =
     path: '/$username/articles',
     getParentRoute: () => rootRouteImport,
   } as any)
+const appusersUsernameConnectionsRouteRoute =
+  appusersUsernameConnectionsRouteRouteImport.update({
+    id: '/(app)/(users)/$username/connections',
+    path: '/$username/connections',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const appusersUsernameProjectsIndexRoute =
   appusersUsernameProjectsIndexRouteImport.update({
     id: '/(app)/(users)/$username/projects/',
@@ -68,15 +77,30 @@ const appusersUsernameProjectsProjectIdRoute =
     path: '/$username/projects/$projectId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const appusersUsernameConnectionsFollowingRoute =
+  appusersUsernameConnectionsFollowingRouteImport.update({
+    id: '/following',
+    path: '/following',
+    getParentRoute: () => appusersUsernameConnectionsRouteRoute,
+  } as any)
+const appusersUsernameConnectionsFollowersRoute =
+  appusersUsernameConnectionsFollowersRouteImport.update({
+    id: '/followers',
+    path: '/followers',
+    getParentRoute: () => appusersUsernameConnectionsRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/': typeof appIndexRoute
   '/chats': typeof appChatsIndexRoute
   '/explore': typeof appExploreIndexRoute
+  '/$username/connections': typeof appusersUsernameConnectionsRouteRouteWithChildren
   '/$username/articles': typeof appusersUsernameArticlesRoute
   '/$username/experience': typeof appusersUsernameExperienceRoute
   '/$username': typeof appusersUsernameIndexRoute
+  '/$username/connections/followers': typeof appusersUsernameConnectionsFollowersRoute
+  '/$username/connections/following': typeof appusersUsernameConnectionsFollowingRoute
   '/$username/projects/$projectId': typeof appusersUsernameProjectsProjectIdRoute
   '/$username/projects': typeof appusersUsernameProjectsIndexRoute
 }
@@ -85,9 +109,12 @@ export interface FileRoutesByTo {
   '/': typeof appIndexRoute
   '/chats': typeof appChatsIndexRoute
   '/explore': typeof appExploreIndexRoute
+  '/$username/connections': typeof appusersUsernameConnectionsRouteRouteWithChildren
   '/$username/articles': typeof appusersUsernameArticlesRoute
   '/$username/experience': typeof appusersUsernameExperienceRoute
   '/$username': typeof appusersUsernameIndexRoute
+  '/$username/connections/followers': typeof appusersUsernameConnectionsFollowersRoute
+  '/$username/connections/following': typeof appusersUsernameConnectionsFollowingRoute
   '/$username/projects/$projectId': typeof appusersUsernameProjectsProjectIdRoute
   '/$username/projects': typeof appusersUsernameProjectsIndexRoute
 }
@@ -97,9 +124,12 @@ export interface FileRoutesById {
   '/(app)/': typeof appIndexRoute
   '/(app)/chats/': typeof appChatsIndexRoute
   '/(app)/explore/': typeof appExploreIndexRoute
+  '/(app)/(users)/$username/connections': typeof appusersUsernameConnectionsRouteRouteWithChildren
   '/(app)/(users)/$username/articles': typeof appusersUsernameArticlesRoute
   '/(app)/(users)/$username/experience': typeof appusersUsernameExperienceRoute
   '/(app)/(users)/$username/': typeof appusersUsernameIndexRoute
+  '/(app)/(users)/$username/connections/followers': typeof appusersUsernameConnectionsFollowersRoute
+  '/(app)/(users)/$username/connections/following': typeof appusersUsernameConnectionsFollowingRoute
   '/(app)/(users)/$username/projects/$projectId': typeof appusersUsernameProjectsProjectIdRoute
   '/(app)/(users)/$username/projects/': typeof appusersUsernameProjectsIndexRoute
 }
@@ -110,9 +140,12 @@ export interface FileRouteTypes {
     | '/'
     | '/chats'
     | '/explore'
+    | '/$username/connections'
     | '/$username/articles'
     | '/$username/experience'
     | '/$username'
+    | '/$username/connections/followers'
+    | '/$username/connections/following'
     | '/$username/projects/$projectId'
     | '/$username/projects'
   fileRoutesByTo: FileRoutesByTo
@@ -121,9 +154,12 @@ export interface FileRouteTypes {
     | '/'
     | '/chats'
     | '/explore'
+    | '/$username/connections'
     | '/$username/articles'
     | '/$username/experience'
     | '/$username'
+    | '/$username/connections/followers'
+    | '/$username/connections/following'
     | '/$username/projects/$projectId'
     | '/$username/projects'
   id:
@@ -132,9 +168,12 @@ export interface FileRouteTypes {
     | '/(app)/'
     | '/(app)/chats/'
     | '/(app)/explore/'
+    | '/(app)/(users)/$username/connections'
     | '/(app)/(users)/$username/articles'
     | '/(app)/(users)/$username/experience'
     | '/(app)/(users)/$username/'
+    | '/(app)/(users)/$username/connections/followers'
+    | '/(app)/(users)/$username/connections/following'
     | '/(app)/(users)/$username/projects/$projectId'
     | '/(app)/(users)/$username/projects/'
   fileRoutesById: FileRoutesById
@@ -144,6 +183,7 @@ export interface RootRouteChildren {
   appIndexRoute: typeof appIndexRoute
   appChatsIndexRoute: typeof appChatsIndexRoute
   appExploreIndexRoute: typeof appExploreIndexRoute
+  appusersUsernameConnectionsRouteRoute: typeof appusersUsernameConnectionsRouteRouteWithChildren
   appusersUsernameArticlesRoute: typeof appusersUsernameArticlesRoute
   appusersUsernameExperienceRoute: typeof appusersUsernameExperienceRoute
   appusersUsernameIndexRoute: typeof appusersUsernameIndexRoute
@@ -202,6 +242,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appusersUsernameArticlesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(app)/(users)/$username/connections': {
+      id: '/(app)/(users)/$username/connections'
+      path: '/$username/connections'
+      fullPath: '/$username/connections'
+      preLoaderRoute: typeof appusersUsernameConnectionsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(app)/(users)/$username/projects/': {
       id: '/(app)/(users)/$username/projects/'
       path: '/$username/projects'
@@ -216,14 +263,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appusersUsernameProjectsProjectIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(app)/(users)/$username/connections/following': {
+      id: '/(app)/(users)/$username/connections/following'
+      path: '/following'
+      fullPath: '/$username/connections/following'
+      preLoaderRoute: typeof appusersUsernameConnectionsFollowingRouteImport
+      parentRoute: typeof appusersUsernameConnectionsRouteRoute
+    }
+    '/(app)/(users)/$username/connections/followers': {
+      id: '/(app)/(users)/$username/connections/followers'
+      path: '/followers'
+      fullPath: '/$username/connections/followers'
+      preLoaderRoute: typeof appusersUsernameConnectionsFollowersRouteImport
+      parentRoute: typeof appusersUsernameConnectionsRouteRoute
+    }
   }
 }
+
+interface appusersUsernameConnectionsRouteRouteChildren {
+  appusersUsernameConnectionsFollowersRoute: typeof appusersUsernameConnectionsFollowersRoute
+  appusersUsernameConnectionsFollowingRoute: typeof appusersUsernameConnectionsFollowingRoute
+}
+
+const appusersUsernameConnectionsRouteRouteChildren: appusersUsernameConnectionsRouteRouteChildren =
+  {
+    appusersUsernameConnectionsFollowersRoute:
+      appusersUsernameConnectionsFollowersRoute,
+    appusersUsernameConnectionsFollowingRoute:
+      appusersUsernameConnectionsFollowingRoute,
+  }
+
+const appusersUsernameConnectionsRouteRouteWithChildren =
+  appusersUsernameConnectionsRouteRoute._addFileChildren(
+    appusersUsernameConnectionsRouteRouteChildren,
+  )
 
 const rootRouteChildren: RootRouteChildren = {
   authLoginRoute: authLoginRoute,
   appIndexRoute: appIndexRoute,
   appChatsIndexRoute: appChatsIndexRoute,
   appExploreIndexRoute: appExploreIndexRoute,
+  appusersUsernameConnectionsRouteRoute:
+    appusersUsernameConnectionsRouteRouteWithChildren,
   appusersUsernameArticlesRoute: appusersUsernameArticlesRoute,
   appusersUsernameExperienceRoute: appusersUsernameExperienceRoute,
   appusersUsernameIndexRoute: appusersUsernameIndexRoute,
