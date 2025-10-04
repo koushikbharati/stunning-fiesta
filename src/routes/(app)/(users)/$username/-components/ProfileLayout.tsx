@@ -11,6 +11,7 @@ import {
   HiOutlineMapPin,
 } from 'react-icons/hi2'
 import Tabbar from './Tabbar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function ProfileLayout({ children }: PropsWithChildren) {
   return (
@@ -18,15 +19,21 @@ export default function ProfileLayout({ children }: PropsWithChildren) {
       <div className="space-y-4 p-4">
         <figure className="space-y-2">
           <div className="flex items-center justify-between">
-            <div className="bg-accent outline-border/30 aspect-square size-24 overflow-hidden rounded-full outline-3">
-              <img src={USER.avatar} alt={`${USER.name} avatar`} />
-            </div>
+            <Avatar className="ring-background size-24 ring-2">
+              <AvatarImage src={USER.avatar} alt={USER.name} />
+              <AvatarFallback>KB</AvatarFallback>
+            </Avatar>
             <div className="flex items-center gap-2">
-              <Button className="size-8" variant="outline" size="icon">
+              <Button variant="outline" size="icon-sm">
                 <HiOutlineEnvelope />
               </Button>
-              <Button variant="outline" size="sm">
-                Edit profile
+              <Button variant="outline" size="sm" asChild>
+                <Link
+                  to="/$username/edit-profile"
+                  params={{ username: '33se7en' }}
+                >
+                  Edit profile
+                </Link>
               </Button>
             </div>
           </div>

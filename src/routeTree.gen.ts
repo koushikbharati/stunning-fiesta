@@ -15,6 +15,7 @@ import { Route as appExploreIndexRouteImport } from './routes/(app)/explore/inde
 import { Route as appChatsIndexRouteImport } from './routes/(app)/chats/index'
 import { Route as appusersUsernameIndexRouteImport } from './routes/(app)/(users)/$username/index'
 import { Route as appusersUsernameExperienceRouteImport } from './routes/(app)/(users)/$username/experience'
+import { Route as appusersUsernameEditProfileRouteImport } from './routes/(app)/(users)/$username/edit-profile'
 import { Route as appusersUsernameArticlesRouteImport } from './routes/(app)/(users)/$username/articles'
 import { Route as appusersUsernameConnectionsRouteRouteImport } from './routes/(app)/(users)/$username/connections/route'
 import { Route as appusersUsernameProjectsIndexRouteImport } from './routes/(app)/(users)/$username/projects/index'
@@ -51,6 +52,12 @@ const appusersUsernameExperienceRoute =
   appusersUsernameExperienceRouteImport.update({
     id: '/(app)/(users)/$username/experience',
     path: '/$username/experience',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const appusersUsernameEditProfileRoute =
+  appusersUsernameEditProfileRouteImport.update({
+    id: '/(app)/(users)/$username/edit-profile',
+    path: '/$username/edit-profile',
     getParentRoute: () => rootRouteImport,
   } as any)
 const appusersUsernameArticlesRoute =
@@ -97,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/explore': typeof appExploreIndexRoute
   '/$username/connections': typeof appusersUsernameConnectionsRouteRouteWithChildren
   '/$username/articles': typeof appusersUsernameArticlesRoute
+  '/$username/edit-profile': typeof appusersUsernameEditProfileRoute
   '/$username/experience': typeof appusersUsernameExperienceRoute
   '/$username': typeof appusersUsernameIndexRoute
   '/$username/connections/followers': typeof appusersUsernameConnectionsFollowersRoute
@@ -111,6 +119,7 @@ export interface FileRoutesByTo {
   '/explore': typeof appExploreIndexRoute
   '/$username/connections': typeof appusersUsernameConnectionsRouteRouteWithChildren
   '/$username/articles': typeof appusersUsernameArticlesRoute
+  '/$username/edit-profile': typeof appusersUsernameEditProfileRoute
   '/$username/experience': typeof appusersUsernameExperienceRoute
   '/$username': typeof appusersUsernameIndexRoute
   '/$username/connections/followers': typeof appusersUsernameConnectionsFollowersRoute
@@ -126,6 +135,7 @@ export interface FileRoutesById {
   '/(app)/explore/': typeof appExploreIndexRoute
   '/(app)/(users)/$username/connections': typeof appusersUsernameConnectionsRouteRouteWithChildren
   '/(app)/(users)/$username/articles': typeof appusersUsernameArticlesRoute
+  '/(app)/(users)/$username/edit-profile': typeof appusersUsernameEditProfileRoute
   '/(app)/(users)/$username/experience': typeof appusersUsernameExperienceRoute
   '/(app)/(users)/$username/': typeof appusersUsernameIndexRoute
   '/(app)/(users)/$username/connections/followers': typeof appusersUsernameConnectionsFollowersRoute
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/$username/connections'
     | '/$username/articles'
+    | '/$username/edit-profile'
     | '/$username/experience'
     | '/$username'
     | '/$username/connections/followers'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/$username/connections'
     | '/$username/articles'
+    | '/$username/edit-profile'
     | '/$username/experience'
     | '/$username'
     | '/$username/connections/followers'
@@ -170,6 +182,7 @@ export interface FileRouteTypes {
     | '/(app)/explore/'
     | '/(app)/(users)/$username/connections'
     | '/(app)/(users)/$username/articles'
+    | '/(app)/(users)/$username/edit-profile'
     | '/(app)/(users)/$username/experience'
     | '/(app)/(users)/$username/'
     | '/(app)/(users)/$username/connections/followers'
@@ -185,6 +198,7 @@ export interface RootRouteChildren {
   appExploreIndexRoute: typeof appExploreIndexRoute
   appusersUsernameConnectionsRouteRoute: typeof appusersUsernameConnectionsRouteRouteWithChildren
   appusersUsernameArticlesRoute: typeof appusersUsernameArticlesRoute
+  appusersUsernameEditProfileRoute: typeof appusersUsernameEditProfileRoute
   appusersUsernameExperienceRoute: typeof appusersUsernameExperienceRoute
   appusersUsernameIndexRoute: typeof appusersUsernameIndexRoute
   appusersUsernameProjectsProjectIdRoute: typeof appusersUsernameProjectsProjectIdRoute
@@ -233,6 +247,13 @@ declare module '@tanstack/react-router' {
       path: '/$username/experience'
       fullPath: '/$username/experience'
       preLoaderRoute: typeof appusersUsernameExperienceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/(users)/$username/edit-profile': {
+      id: '/(app)/(users)/$username/edit-profile'
+      path: '/$username/edit-profile'
+      fullPath: '/$username/edit-profile'
+      preLoaderRoute: typeof appusersUsernameEditProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app)/(users)/$username/articles': {
@@ -306,6 +327,7 @@ const rootRouteChildren: RootRouteChildren = {
   appusersUsernameConnectionsRouteRoute:
     appusersUsernameConnectionsRouteRouteWithChildren,
   appusersUsernameArticlesRoute: appusersUsernameArticlesRoute,
+  appusersUsernameEditProfileRoute: appusersUsernameEditProfileRoute,
   appusersUsernameExperienceRoute: appusersUsernameExperienceRoute,
   appusersUsernameIndexRoute: appusersUsernameIndexRoute,
   appusersUsernameProjectsProjectIdRoute:
