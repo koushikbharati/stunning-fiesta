@@ -13,11 +13,15 @@ export const Route = createFileRoute('/(app)/(users)/$username/articles')({
 function RouteComponent() {
   if (!ARTICLES.length)
     return (
-      <NoDataFound
-        message="Your article library is currently empty. Your thoughts and ideas are
+      <MainLayout>
+        <ProfileLayout>
+          <NoDataFound
+            message="Your article library is currently empty. Your thoughts and ideas are
             waiting to be shared."
-        btnText="Start writing"
-      />
+            btnText="Start writing"
+          />
+        </ProfileLayout>
+      </MainLayout>
     )
 
   return (

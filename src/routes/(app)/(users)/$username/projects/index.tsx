@@ -16,10 +16,14 @@ function RouteComponent() {
 
   if (!PROJECTS.length)
     return (
-      <NoDataFound
-        message="Ready to show off your work? Add your first project now to let others see what you've created."
-        btnText="Add project"
-      />
+      <MainLayout>
+        <ProfileLayout>
+          <NoDataFound
+            message="Ready to show off your work? Add your first project now to let others see what you've created."
+            btnText="Add project"
+          />
+        </ProfileLayout>
+      </MainLayout>
     )
 
   return (

@@ -15,10 +15,14 @@ export const Route = createFileRoute('/(app)/(users)/$username/experience')({
 function RouteComponent() {
   if (!EXPERIENCE.length)
     return (
-      <NoDataFound
-        message="No work experience has been listed yet. Begin building your professional profile."
-        btnText="Add experience"
-      />
+      <MainLayout>
+        <ProfileLayout>
+          <NoDataFound
+            message="No work experience has been listed yet. Begin building your professional profile."
+            btnText="Add experience"
+          />
+        </ProfileLayout>
+      </MainLayout>
     )
   return (
     <MainLayout>
