@@ -31,8 +31,8 @@ function RouteComponent() {
     ],
   }
   return (
-    <div>
-      <header className="bg-background sticky top-0 z-50 flex h-12 items-center justify-between">
+    <div className="flex h-dvh flex-col">
+      <header className="bg-background flex h-12 items-center justify-between">
         <Button variant="ghost" size="icon" asChild>
           <Link
             to="/$username/projects"
@@ -46,7 +46,7 @@ function RouteComponent() {
           <HiOutlinePencilSquare className="size-5" />
         </Button>
       </header>
-      <article className="p-4">
+      <article className="flex-1 overflow-y-auto p-4">
         <div className="mb-4 aspect-video rounded-2xl bg-green-700"></div>
 
         <section className="mb-8">
