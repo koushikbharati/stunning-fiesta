@@ -41,3 +41,15 @@ export function extractDomainWithPath(url: string): string {
     return url.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')
   }
 }
+
+export async function readFile(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.addEventListener('load', () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result)
+      }
+    })
+    reader.readAsDataURL(file)
+  })
+}
