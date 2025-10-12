@@ -15,10 +15,11 @@ import { Route as appExploreIndexRouteImport } from './routes/(app)/explore/inde
 import { Route as appChatsIndexRouteImport } from './routes/(app)/chats/index'
 import { Route as appusersUsernameIndexRouteImport } from './routes/(app)/(users)/$username/index'
 import { Route as appusersUsernameExperienceRouteImport } from './routes/(app)/(users)/$username/experience'
-import { Route as appusersUsernameEditProfileRouteImport } from './routes/(app)/(users)/$username/edit-profile'
+import { Route as appusersUsernameEditProfileV1RouteImport } from './routes/(app)/(users)/$username/edit-profile-v1'
 import { Route as appusersUsernameArticlesRouteImport } from './routes/(app)/(users)/$username/articles'
 import { Route as appusersUsernameConnectionsRouteRouteImport } from './routes/(app)/(users)/$username/connections/route'
 import { Route as appusersUsernameProjectsIndexRouteImport } from './routes/(app)/(users)/$username/projects/index'
+import { Route as appusersUsernameEditProfileIndexRouteImport } from './routes/(app)/(users)/$username/edit-profile/index'
 import { Route as appusersUsernameProjectsProjectIdRouteImport } from './routes/(app)/(users)/$username/projects/$projectId'
 import { Route as appusersUsernameConnectionsFollowingRouteImport } from './routes/(app)/(users)/$username/connections/following'
 import { Route as appusersUsernameConnectionsFollowersRouteImport } from './routes/(app)/(users)/$username/connections/followers'
@@ -54,10 +55,10 @@ const appusersUsernameExperienceRoute =
     path: '/$username/experience',
     getParentRoute: () => rootRouteImport,
   } as any)
-const appusersUsernameEditProfileRoute =
-  appusersUsernameEditProfileRouteImport.update({
-    id: '/(app)/(users)/$username/edit-profile',
-    path: '/$username/edit-profile',
+const appusersUsernameEditProfileV1Route =
+  appusersUsernameEditProfileV1RouteImport.update({
+    id: '/(app)/(users)/$username/edit-profile-v1',
+    path: '/$username/edit-profile-v1',
     getParentRoute: () => rootRouteImport,
   } as any)
 const appusersUsernameArticlesRoute =
@@ -76,6 +77,12 @@ const appusersUsernameProjectsIndexRoute =
   appusersUsernameProjectsIndexRouteImport.update({
     id: '/(app)/(users)/$username/projects/',
     path: '/$username/projects/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const appusersUsernameEditProfileIndexRoute =
+  appusersUsernameEditProfileIndexRouteImport.update({
+    id: '/(app)/(users)/$username/edit-profile/',
+    path: '/$username/edit-profile/',
     getParentRoute: () => rootRouteImport,
   } as any)
 const appusersUsernameProjectsProjectIdRoute =
@@ -104,12 +111,13 @@ export interface FileRoutesByFullPath {
   '/explore': typeof appExploreIndexRoute
   '/$username/connections': typeof appusersUsernameConnectionsRouteRouteWithChildren
   '/$username/articles': typeof appusersUsernameArticlesRoute
-  '/$username/edit-profile': typeof appusersUsernameEditProfileRoute
+  '/$username/edit-profile-v1': typeof appusersUsernameEditProfileV1Route
   '/$username/experience': typeof appusersUsernameExperienceRoute
   '/$username': typeof appusersUsernameIndexRoute
   '/$username/connections/followers': typeof appusersUsernameConnectionsFollowersRoute
   '/$username/connections/following': typeof appusersUsernameConnectionsFollowingRoute
   '/$username/projects/$projectId': typeof appusersUsernameProjectsProjectIdRoute
+  '/$username/edit-profile': typeof appusersUsernameEditProfileIndexRoute
   '/$username/projects': typeof appusersUsernameProjectsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -119,12 +127,13 @@ export interface FileRoutesByTo {
   '/explore': typeof appExploreIndexRoute
   '/$username/connections': typeof appusersUsernameConnectionsRouteRouteWithChildren
   '/$username/articles': typeof appusersUsernameArticlesRoute
-  '/$username/edit-profile': typeof appusersUsernameEditProfileRoute
+  '/$username/edit-profile-v1': typeof appusersUsernameEditProfileV1Route
   '/$username/experience': typeof appusersUsernameExperienceRoute
   '/$username': typeof appusersUsernameIndexRoute
   '/$username/connections/followers': typeof appusersUsernameConnectionsFollowersRoute
   '/$username/connections/following': typeof appusersUsernameConnectionsFollowingRoute
   '/$username/projects/$projectId': typeof appusersUsernameProjectsProjectIdRoute
+  '/$username/edit-profile': typeof appusersUsernameEditProfileIndexRoute
   '/$username/projects': typeof appusersUsernameProjectsIndexRoute
 }
 export interface FileRoutesById {
@@ -135,12 +144,13 @@ export interface FileRoutesById {
   '/(app)/explore/': typeof appExploreIndexRoute
   '/(app)/(users)/$username/connections': typeof appusersUsernameConnectionsRouteRouteWithChildren
   '/(app)/(users)/$username/articles': typeof appusersUsernameArticlesRoute
-  '/(app)/(users)/$username/edit-profile': typeof appusersUsernameEditProfileRoute
+  '/(app)/(users)/$username/edit-profile-v1': typeof appusersUsernameEditProfileV1Route
   '/(app)/(users)/$username/experience': typeof appusersUsernameExperienceRoute
   '/(app)/(users)/$username/': typeof appusersUsernameIndexRoute
   '/(app)/(users)/$username/connections/followers': typeof appusersUsernameConnectionsFollowersRoute
   '/(app)/(users)/$username/connections/following': typeof appusersUsernameConnectionsFollowingRoute
   '/(app)/(users)/$username/projects/$projectId': typeof appusersUsernameProjectsProjectIdRoute
+  '/(app)/(users)/$username/edit-profile/': typeof appusersUsernameEditProfileIndexRoute
   '/(app)/(users)/$username/projects/': typeof appusersUsernameProjectsIndexRoute
 }
 export interface FileRouteTypes {
@@ -152,12 +162,13 @@ export interface FileRouteTypes {
     | '/explore'
     | '/$username/connections'
     | '/$username/articles'
-    | '/$username/edit-profile'
+    | '/$username/edit-profile-v1'
     | '/$username/experience'
     | '/$username'
     | '/$username/connections/followers'
     | '/$username/connections/following'
     | '/$username/projects/$projectId'
+    | '/$username/edit-profile'
     | '/$username/projects'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -167,12 +178,13 @@ export interface FileRouteTypes {
     | '/explore'
     | '/$username/connections'
     | '/$username/articles'
-    | '/$username/edit-profile'
+    | '/$username/edit-profile-v1'
     | '/$username/experience'
     | '/$username'
     | '/$username/connections/followers'
     | '/$username/connections/following'
     | '/$username/projects/$projectId'
+    | '/$username/edit-profile'
     | '/$username/projects'
   id:
     | '__root__'
@@ -182,12 +194,13 @@ export interface FileRouteTypes {
     | '/(app)/explore/'
     | '/(app)/(users)/$username/connections'
     | '/(app)/(users)/$username/articles'
-    | '/(app)/(users)/$username/edit-profile'
+    | '/(app)/(users)/$username/edit-profile-v1'
     | '/(app)/(users)/$username/experience'
     | '/(app)/(users)/$username/'
     | '/(app)/(users)/$username/connections/followers'
     | '/(app)/(users)/$username/connections/following'
     | '/(app)/(users)/$username/projects/$projectId'
+    | '/(app)/(users)/$username/edit-profile/'
     | '/(app)/(users)/$username/projects/'
   fileRoutesById: FileRoutesById
 }
@@ -198,10 +211,11 @@ export interface RootRouteChildren {
   appExploreIndexRoute: typeof appExploreIndexRoute
   appusersUsernameConnectionsRouteRoute: typeof appusersUsernameConnectionsRouteRouteWithChildren
   appusersUsernameArticlesRoute: typeof appusersUsernameArticlesRoute
-  appusersUsernameEditProfileRoute: typeof appusersUsernameEditProfileRoute
+  appusersUsernameEditProfileV1Route: typeof appusersUsernameEditProfileV1Route
   appusersUsernameExperienceRoute: typeof appusersUsernameExperienceRoute
   appusersUsernameIndexRoute: typeof appusersUsernameIndexRoute
   appusersUsernameProjectsProjectIdRoute: typeof appusersUsernameProjectsProjectIdRoute
+  appusersUsernameEditProfileIndexRoute: typeof appusersUsernameEditProfileIndexRoute
   appusersUsernameProjectsIndexRoute: typeof appusersUsernameProjectsIndexRoute
 }
 
@@ -249,11 +263,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appusersUsernameExperienceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(app)/(users)/$username/edit-profile': {
-      id: '/(app)/(users)/$username/edit-profile'
-      path: '/$username/edit-profile'
-      fullPath: '/$username/edit-profile'
-      preLoaderRoute: typeof appusersUsernameEditProfileRouteImport
+    '/(app)/(users)/$username/edit-profile-v1': {
+      id: '/(app)/(users)/$username/edit-profile-v1'
+      path: '/$username/edit-profile-v1'
+      fullPath: '/$username/edit-profile-v1'
+      preLoaderRoute: typeof appusersUsernameEditProfileV1RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app)/(users)/$username/articles': {
@@ -275,6 +289,13 @@ declare module '@tanstack/react-router' {
       path: '/$username/projects'
       fullPath: '/$username/projects'
       preLoaderRoute: typeof appusersUsernameProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/(users)/$username/edit-profile/': {
+      id: '/(app)/(users)/$username/edit-profile/'
+      path: '/$username/edit-profile'
+      fullPath: '/$username/edit-profile'
+      preLoaderRoute: typeof appusersUsernameEditProfileIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app)/(users)/$username/projects/$projectId': {
@@ -327,11 +348,12 @@ const rootRouteChildren: RootRouteChildren = {
   appusersUsernameConnectionsRouteRoute:
     appusersUsernameConnectionsRouteRouteWithChildren,
   appusersUsernameArticlesRoute: appusersUsernameArticlesRoute,
-  appusersUsernameEditProfileRoute: appusersUsernameEditProfileRoute,
+  appusersUsernameEditProfileV1Route: appusersUsernameEditProfileV1Route,
   appusersUsernameExperienceRoute: appusersUsernameExperienceRoute,
   appusersUsernameIndexRoute: appusersUsernameIndexRoute,
   appusersUsernameProjectsProjectIdRoute:
     appusersUsernameProjectsProjectIdRoute,
+  appusersUsernameEditProfileIndexRoute: appusersUsernameEditProfileIndexRoute,
   appusersUsernameProjectsIndexRoute: appusersUsernameProjectsIndexRoute,
 }
 export const routeTree = rootRouteImport
