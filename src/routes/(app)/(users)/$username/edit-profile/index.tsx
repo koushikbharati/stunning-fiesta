@@ -42,7 +42,11 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
-import type { EditAvatarTab, FileWithProgress } from '@/types/common'
+import type {
+  Adjustment,
+  EditAvatarTab,
+  FileWithProgress,
+} from '@/types/common'
 import { readFile } from '@/utils/helpers'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { format } from 'date-fns'
@@ -61,6 +65,7 @@ import TabItem from './-components/TabItem'
 import Cropper, { type Area, type Point } from 'react-easy-crop'
 import { Slider } from '@/components/ui/slider'
 import AdjustmentList from './-components/AdjustmentList'
+import FiltersList from './-components/FiltersList'
 
 const editProfileSearchSchema = z.object({
   tab: z.enum(['edit', 'filters']).catch('edit'),
@@ -127,7 +132,7 @@ function RouteComponent() {
     console.log(croppedArea, croppedAreaPixels)
   }
 
-  const handleAdjustmentSelect = (name: keyof typeof adjustments) => {
+  const handleAdjustmentSelect = (name: Adjustment) => {
     navigate({
       search: {
         tab,
@@ -136,10 +141,7 @@ function RouteComponent() {
     })
   }
 
-  const handleAdjustmentChange = (
-    name: keyof typeof adjustments,
-    value: number
-  ) => {
+  const handleAdjustmentChange = (name: Adjustment, value: number) => {
     setAdjustments((prev) => ({
       ...prev,
       [name]: value,
@@ -180,17 +182,7 @@ function RouteComponent() {
           <h1 className="text-lg leading-none font-semibold">Edit avatar</h1>
           <Button className="invisible" variant="ghost" size="icon"></Button>
         </header>
-        <article
-          className="relative aspect-square"
-          style={{
-            filter: `
-      brightness(${adjustments.brightness}%)
-      contrast(${adjustments.contrast}%)
-      saturate(${adjustments.saturation}%)
-      hue-rotate(${adjustments.hue}deg)
-    `,
-          }}
-        >
+        <article className="relative aspect-square overflow-hidden">
           <Cropper
             image={selectedAvatar.dataUrl}
             crop={crop}
@@ -201,13 +193,25 @@ function RouteComponent() {
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}
+            style={{
+              mediaStyle: {
+                // rotate: `${adjustments.hue}deg`,
+                filter: `
+      brightness(${adjustments.brightness}%)
+      contrast(${adjustments.contrast}%)
+      saturate(${adjustments.saturation}%)
+      hue-rotate(${adjustments.hue}deg)
+    `,
+              },
+            }}
           />
         </article>
         <section className="flex flex-1 flex-col justify-center">
           {tab === 'edit' && (
             <>
               <AdjustmentList
-                selectedValue={adjustment}
+                adjustments={adjustments}
+                selectedAdjustment={adjustment}
                 onSelect={handleAdjustmentSelect}
               />
               <div className="p-4">
@@ -216,7 +220,7 @@ function RouteComponent() {
                   name={adjustment}
                   defaultValue={[adjustments[adjustment]]}
                   min={0}
-                  max={200}
+                  max={adjustment === 'hue' ? 360 : 200}
                   step={1}
                   onValueChange={(value) =>
                     handleAdjustmentChange(adjustment, value[0])
@@ -226,20 +230,7 @@ function RouteComponent() {
             </>
           )}
 
-          {tab === 'filters' && (
-            <ul className="flex items-center gap-4 overflow-x-auto p-4">
-              {Array(10)
-                .fill(null)
-                .map((_, i) => (
-                  <li key={i} className="flex flex-col items-center gap-2">
-                    <p className="text-muted-foreground text-xs font-medium">
-                      Filter {i + 1}
-                    </p>
-                    <div className="bg-muted aspect-square size-24"></div>
-                  </li>
-                ))}
-            </ul>
-          )}
+          {tab === 'filters' && <FiltersList />}
         </section>
         <ul className="flex items-center justify-center border-t">
           <TabItem
