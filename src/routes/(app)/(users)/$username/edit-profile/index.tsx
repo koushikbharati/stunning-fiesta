@@ -42,7 +42,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
-import type { FileWithProgress } from '@/types/common'
+import type { EditAvatarTab, FileWithProgress } from '@/types/common'
 import { readFile } from '@/utils/helpers'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { format } from 'date-fns'
@@ -56,22 +56,17 @@ import {
   HiSlash,
   HiXMark,
 } from 'react-icons/hi2'
-import {
-  TbBrightnessFilled,
-  TbCheck,
-  TbColorFilter,
-  TbContrast2Filled,
-  TbSunFilled,
-} from 'react-icons/tb'
+import { TbCheck } from 'react-icons/tb'
 import TabItem from './-components/TabItem'
 import Cropper, { type Area, type Point } from 'react-easy-crop'
 import { Slider } from '@/components/ui/slider'
+import AdjustmentList from './-components/AdjustmentList'
 
 const editProfileSearchSchema = z.object({
-  // page: z.number().catch(1),
   tab: z.enum(['edit', 'filters']).catch('edit'),
-  // filter: z.string().catch(''),
-  // sort: z.enum(['newest', 'oldest', 'price']).catch('newest'),
+  adjustment: z
+    .enum(['brightness', 'contrast', 'saturation', 'hue'])
+    .catch('brightness'),
 })
 
 export const Route = createFileRoute('/(app)/(users)/$username/edit-profile/')({
@@ -82,7 +77,7 @@ export const Route = createFileRoute('/(app)/(users)/$username/edit-profile/')({
 function RouteComponent() {
   const username = Route.useParams().username
   const navigate = Route.useNavigate()
-  const { tab } = Route.useSearch()
+  const { tab, adjustment } = Route.useSearch()
   const [openAvatarDialog, setOpenAvatarDialog] = useState(false)
   const [selectedAvatar, setSelectedAvatar] = useState<FileWithProgress | null>(
     null
@@ -118,6 +113,7 @@ function RouteComponent() {
     navigate({
       search: {
         tab: 'edit',
+        adjustment: 'brightness',
       },
     })
     setOpenAvatarDialog(false)
@@ -131,10 +127,30 @@ function RouteComponent() {
     console.log(croppedArea, croppedAreaPixels)
   }
 
-  const handleTabSwitch = (tab: 'edit' | 'filters') => {
+  const handleAdjustmentSelect = (name: keyof typeof adjustments) => {
     navigate({
       search: {
         tab,
+        adjustment: name,
+      },
+    })
+  }
+
+  const handleAdjustmentChange = (
+    name: keyof typeof adjustments,
+    value: number
+  ) => {
+    setAdjustments((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleTabSwitch = (tab: EditAvatarTab) => {
+    navigate({
+      search: {
+        tab,
+        adjustment,
       },
     })
   }
@@ -190,42 +206,20 @@ function RouteComponent() {
         <section className="flex flex-1 flex-col justify-center">
           {tab === 'edit' && (
             <>
-              <ul className="flex items-center gap-8 overflow-x-auto p-4">
-                <li className="flex flex-col items-center gap-2">
-                  <p className="text-muted-foreground text-xs font-medium">
-                    Brightness
-                  </p>
-                  <TbBrightnessFilled className="fill-muted-foreground size-20" />
-                </li>
-                <li className="flex flex-col items-center gap-2">
-                  <p className="text-muted-foreground text-xs font-medium">
-                    Contrast
-                  </p>
-                  <TbContrast2Filled className="fill-muted-foreground size-20" />
-                </li>
-                <li className="flex flex-col items-center gap-2">
-                  <p className="text-muted-foreground text-xs font-medium">
-                    Saturation
-                  </p>
-                  <TbSunFilled className="fill-muted-foreground size-20" />
-                </li>
-                <li className="flex flex-col items-center gap-2">
-                  <p className="text-muted-foreground text-xs font-medium">
-                    Hue
-                  </p>
-                  <TbColorFilter className="stroke-muted-foreground size-20" />
-                </li>
-              </ul>
+              <AdjustmentList
+                selectedValue={adjustment}
+                onSelect={handleAdjustmentSelect}
+              />
               <div className="p-4">
                 <Slider
-                  defaultValue={[33]}
-                  max={100}
+                  key={adjustment}
+                  name={adjustment}
+                  defaultValue={[adjustments[adjustment]]}
+                  min={0}
+                  max={200}
                   step={1}
-                  onChange={(e) =>
-                    setAdjustments({
-                      ...adjustments,
-                      brightness: 0,
-                    })
+                  onValueChange={(value) =>
+                    handleAdjustmentChange(adjustment, value[0])
                   }
                 />
               </div>
