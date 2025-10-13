@@ -5,6 +5,7 @@ import type { PropsWithChildren } from 'react'
 import {
   HiCheckBadge,
   HiOutlineBriefcase,
+  HiOutlineCake,
   HiOutlineCalendar,
   HiOutlineEnvelope,
   HiOutlineLink,
@@ -12,6 +13,7 @@ import {
 } from 'react-icons/hi2'
 import Tabbar from './Tabbar'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { format } from 'date-fns'
 
 export default function ProfileLayout({ children }: PropsWithChildren) {
   return (
@@ -65,7 +67,9 @@ export default function ProfileLayout({ children }: PropsWithChildren) {
                     {extractDomainWithPath(rest.href)}
                   </Link>
                 ) : (
-                  <span className="text-muted-foreground">{rest.name}</span>
+                  <span className="text-muted-foreground">
+                    {rest?.date ? format(rest?.date, 'PPP') : rest.name}
+                  </span>
                 )}
               </li>
             ))}
@@ -141,9 +145,15 @@ const USER = {
       order: 3,
     },
     {
+      name: 'Birthday',
+      date: new Date(1998, 0, 12),
+      icon: HiOutlineCake,
+      order: 4,
+    },
+    {
       name: 'Joined September 2025',
       icon: HiOutlineCalendar,
-      order: 4,
+      order: 5,
     },
   ],
 }
