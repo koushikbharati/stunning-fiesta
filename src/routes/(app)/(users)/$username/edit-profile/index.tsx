@@ -46,14 +46,17 @@ import type { FileWithProgress } from '@/types/common'
 import { readFile } from '@/utils/helpers'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { format } from 'date-fns'
-import { CalendarIcon } from 'lucide-react'
+import { CalendarIcon, LucideFlipHorizontal } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import {
+  HiArrowPath,
   HiChevronLeft,
   HiOutlinePencilSquare,
   HiOutlineSparkles,
+  HiPencilSquare,
   HiSlash,
+  HiSparkles,
   HiXMark,
 } from 'react-icons/hi2'
 import { TbCheck } from 'react-icons/tb'
@@ -95,6 +98,8 @@ function RouteComponent() {
   })
   const [selectedPresetName, setSelectedPresetName] =
     useState<PresetFilter>('Normal')
+  const [rotation, setRotation] = useState(0)
+  const [flip, setFlip] = useState({ x: false, y: false })
 
   const selectedFilter = getPresetFilterByName(selectedPresetName)
 
@@ -150,6 +155,17 @@ function RouteComponent() {
     }))
   }
 
+  const handleRotateChange = () => {
+    setRotation((prev) => prev + 90)
+  }
+
+  const handleFlipChange = (axis: 'x' | 'y') => {
+    setFlip((prev) => ({
+      ...prev,
+      [axis]: !prev[axis],
+    }))
+  }
+
   const finalFilter = getFinalFilter(selectedFilter?.values!, adjustments)
 
   const handleTabSwitch = (tab: EditAvatarTab) => {
@@ -176,17 +192,21 @@ function RouteComponent() {
     setSelectedAvatar(null)
     setSelectedPresetName('Normal')
     setAdjustments({ brightness: 100, contrast: 100, saturation: 100, hue: 0 })
+    setZoom(1)
+    setCrop({ x: 0, y: 0 })
+    setRotation(0)
+    setFlip({ x: false, y: false })
   }
 
   if (selectedAvatar) {
     return (
       <div className="flex h-dvh flex-col">
-        <header className="bg-background flex h-12 items-center justify-between">
-          <Button variant="ghost" size="icon" onClick={onBack}>
+        <header className="bg-background flex h-12 items-center justify-between px-2">
+          <Button variant="ghost" size="icon-sm" onClick={onBack}>
             <HiXMark className="size-5 stroke-1" />
           </Button>
           <h1 className="text-lg leading-none font-semibold">Edit avatar</h1>
-          <Button className="invisible" variant="ghost" size="icon"></Button>
+          <Button className="invisible" variant="ghost" size="icon-sm"></Button>
         </header>
         <article className="relative aspect-square overflow-hidden">
           <Cropper
@@ -201,12 +221,28 @@ function RouteComponent() {
             onCropComplete={onCropComplete}
             style={{
               mediaStyle: {
-                // rotate: `${adjustments.hue}deg`,
-                transition: 'filter 0.1s ease',
+                rotate: `${rotation}deg`,
+                transition: 'filter 0.1s ease, rotate 0.2s ease',
                 filter: finalFilter,
               },
             }}
           />
+          <Button
+            className="absolute bottom-4 left-4"
+            variant="outline"
+            size="icon-sm"
+            onClick={() => handleFlipChange('x')}
+          >
+            <LucideFlipHorizontal className="size-5" />
+          </Button>
+          <Button
+            className="absolute right-4 bottom-4"
+            variant="outline"
+            size="icon-sm"
+            onClick={handleRotateChange}
+          >
+            <HiArrowPath className="size-5" />
+          </Button>
         </article>
         <section className="flex flex-1 flex-col justify-center">
           {tab === 'edit' && (
@@ -239,19 +275,27 @@ function RouteComponent() {
             />
           )}
         </section>
-        <ul className="flex items-center justify-center border-t">
+        <ul className="_border-t flex items-center justify-center">
           <TabItem
             onClick={() => handleTabSwitch('edit')}
             isActive={tab === 'edit'}
           >
-            <HiOutlinePencilSquare className="size-5" />
+            {tab === 'edit' ? (
+              <HiPencilSquare className="size-5" />
+            ) : (
+              <HiOutlinePencilSquare className="size-5" />
+            )}
             Edit
           </TabItem>
           <TabItem
             onClick={() => handleTabSwitch('filters')}
             isActive={tab === 'filters'}
           >
-            <HiOutlineSparkles className="size-5" />
+            {tab === 'filters' ? (
+              <HiSparkles className="size-5" />
+            ) : (
+              <HiOutlineSparkles className="size-5" />
+            )}
             Filters
           </TabItem>
         </ul>

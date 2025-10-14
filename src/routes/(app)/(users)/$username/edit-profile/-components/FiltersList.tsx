@@ -12,13 +12,13 @@ export default function FiltersList({
 }: FiltersListProps) {
   return (
     <ul className="flex items-center gap-4 overflow-x-auto p-4">
-      {PRESET_FILTERS.map((preset) => {
+      {PRESET_FILTERS.map((preset, index) => {
         const isSelected = preset.name === selectedPreset
         return (
           <li
             key={preset.name}
             className="flex flex-col items-center gap-2"
-            onClick={() => onSelect(preset.name)}
+            onClick={() => onSelect(preset.name as PresetFilter)}
           >
             <p
               data-selected={isSelected || undefined}
@@ -26,7 +26,23 @@ export default function FiltersList({
             >
               {preset.name}
             </p>
-            <div className="bg-muted aspect-square size-24"></div>
+            <div className="bg-muted aspect-square size-24 overflow-hidden">
+              <img
+                src="https://picsum.photos/seed/picsum/100/100"
+                alt="thumbnail"
+                className="h-full w-full object-cover object-center"
+                style={{
+                  filter: `brightness(${PRESET_FILTERS[index].values.brightness}%)
+              contrast(${PRESET_FILTERS[index].values.contrast}%)
+              saturate(${PRESET_FILTERS[index].values.saturation}%)
+              hue-rotate(${PRESET_FILTERS[index].values.hue}deg)
+              sepia(${PRESET_FILTERS[index].values?.sepia || 0})
+              grayscale(${PRESET_FILTERS[index].values?.grayscale || 0})
+              blur(${PRESET_FILTERS[index].values?.blur || 0}px)
+              `,
+                }}
+              />
+            </div>
           </li>
         )
       })}

@@ -10,14 +10,17 @@ export type CSSFilter =
   | 'contrast'
   | 'saturate'
   | 'hue-rotate'
+  | 'invert'
 
 export type PresetFilter =
   | 'Normal'
   | 'Vintage'
   | 'Cool Blue'
-  | 'Warm Glow'
   | 'Noir'
   | 'Dreamy'
+  | 'Inverted'
+  | 'Sepia Tone'
+  | 'Pop Art'
   | 'Cyberpunk'
 
 export interface Adjustments {
@@ -35,4 +38,5 @@ export interface PresetFilters {
   contrast: number
   saturation: number
   hue: number
+  invert?: number
 }

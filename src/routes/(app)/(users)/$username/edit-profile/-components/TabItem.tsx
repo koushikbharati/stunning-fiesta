@@ -14,7 +14,7 @@ export default function TabItem({
     <li
       onClick={onClick}
       data-active={isActive || undefined}
-      className="data-[active]:before:bg-primary data-[active]:text-primary text-muted-foreground relative flex h-12 flex-1 items-center justify-center gap-2 font-medium transition-colors data-[active]:before:absolute data-[active]:before:top-[-1.5px] data-[active]:before:h-0.5 data-[active]:before:w-full data-[active]:before:rounded-full"
+      className="data-[active]:before:bg-primary data-[active]:text-primary text-muted-foreground/50 _data-[active]:before:w-[50%] relative flex h-12 flex-1 items-center justify-center gap-2 font-medium transition-colors data-[active]:before:absolute data-[active]:before:top-[-1.5px] data-[active]:before:h-0.5 data-[active]:before:rounded-full"
     >
       {children}
     </li>

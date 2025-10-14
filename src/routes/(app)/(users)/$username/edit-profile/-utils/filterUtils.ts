@@ -5,7 +5,10 @@ import type {
   PresetFilters,
 } from './types'
 
-export const PRESET_FILTERS = [
+export const PRESET_FILTERS: {
+  name: PresetFilter
+  values: PresetFilters
+}[] = [
   {
     name: 'Normal',
     values: {
@@ -28,10 +31,10 @@ export const PRESET_FILTERS = [
   {
     name: 'Cool Blue',
     values: {
-      brightness: 90,
-      contrast: 100,
-      saturation: 120,
-      hue: 200,
+      brightness: 95,
+      contrast: 110,
+      saturation: 110,
+      hue: 190,
     },
   },
   {
@@ -40,7 +43,7 @@ export const PRESET_FILTERS = [
       grayscale: 100,
       brightness: 80,
       contrast: 140,
-      saturation: 100,
+      saturation: 0,
       hue: 0,
     },
   },
@@ -52,6 +55,44 @@ export const PRESET_FILTERS = [
       contrast: 100,
       saturation: 110,
       hue: 0,
+    },
+  },
+  {
+    name: 'Inverted',
+    values: {
+      invert: 100,
+      brightness: 100,
+      contrast: 100,
+      saturation: 100,
+      hue: 0,
+    },
+  },
+  {
+    name: 'Sepia Tone',
+    values: {
+      sepia: 0.7,
+      brightness: 100,
+      contrast: 105,
+      saturation: 90,
+      hue: 0,
+    },
+  },
+  {
+    name: 'Pop Art',
+    values: {
+      brightness: 120,
+      contrast: 140,
+      saturation: 180,
+      hue: 0,
+    },
+  },
+  {
+    name: 'Cyberpunk',
+    values: {
+      brightness: 100,
+      contrast: 180,
+      saturation: 150,
+      hue: 220,
     },
   },
 ] as const
@@ -85,6 +126,7 @@ export function getFinalFilter(
     sepia: presetFilters.sepia ?? 0,
     grayscale: presetFilters.grayscale ?? 0,
     blur: presetFilters.blur ?? 0,
+    invert: presetFilters.invert ?? 0,
   }
 
   const cssFilterParts = [
@@ -93,8 +135,9 @@ export function getFinalFilter(
     generateCssFilter('saturate', filters.saturation),
     generateCssFilter('hue-rotate', filters.hue, false, 'deg'),
     generateCssFilter('sepia', filters.sepia, false),
-    generateCssFilter('grayscale', filters.grayscale),
+    generateCssFilter('grayscale', filters.grayscale, false),
     generateCssFilter('blur', filters.blur, false, 'px'),
+    generateCssFilter('invert', filters.invert, false),
   ]
 
   return cssFilterParts.filter(Boolean).join(' ').trim()
