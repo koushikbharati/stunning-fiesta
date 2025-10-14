@@ -5,7 +5,3 @@ export interface FileWithProgress {
   uploaded: boolean
   dataUrl?: string
 }
-
-export type EditAvatarTab = 'edit' | 'filters'
-
-export type Adjustment = 'brightness' | 'contrast' | 'saturation' | 'hue'

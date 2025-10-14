@@ -1,4 +1,4 @@
-import type { Adjustment } from '@/types/common'
+import type { Adjustment, Adjustments } from '../-utils/types'
 import AdjustmentItem from './AdjustmentItem'
 import {
   TbContrastFilled,
@@ -8,12 +8,7 @@ import {
 } from 'react-icons/tb'
 
 interface AdjustmentListProps {
-  adjustments: {
-    brightness: number
-    contrast: number
-    saturation: number
-    hue: number
-  }
+  adjustments: Adjustments
   onSelect: (adjustment: Adjustment) => void
   selectedAdjustment: Adjustment
 }

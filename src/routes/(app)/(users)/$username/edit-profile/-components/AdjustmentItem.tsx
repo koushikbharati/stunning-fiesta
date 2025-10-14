@@ -1,5 +1,5 @@
-import type { Adjustment } from '@/types/common'
 import type { IconType } from 'react-icons/lib'
+import type { Adjustment } from '../-utils/types'
 
 interface AdjustmentItemProps {
   label: Adjustment
@@ -50,8 +50,8 @@ function CircularProgress({ progress }: CircularProgressProps) {
   let gradient: string
 
   progress >= 0
-    ? (gradient = `conic-gradient(#3b45f6 0deg ${angle}deg, transparent ${angle}deg 360deg)`)
-    : (gradient = `conic-gradient(transparent 0deg ${360 - angle}deg, #3b82f6 ${360 - angle}deg 360deg)`)
+    ? (gradient = `conic-gradient(oklch(85.2% 0.199 91.936) 0deg ${angle}deg, transparent ${angle}deg 360deg)`)
+    : (gradient = `conic-gradient(transparent 0deg ${360 - angle}deg, var(--primary) ${360 - angle}deg 360deg)`)
 
   return (
     <div

@@ -42,11 +42,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
-import type {
-  Adjustment,
-  EditAvatarTab,
-  FileWithProgress,
-} from '@/types/common'
+import type { FileWithProgress } from '@/types/common'
 import { readFile } from '@/utils/helpers'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { format } from 'date-fns'
@@ -66,6 +62,8 @@ import Cropper, { type Area, type Point } from 'react-easy-crop'
 import { Slider } from '@/components/ui/slider'
 import AdjustmentList from './-components/AdjustmentList'
 import FiltersList from './-components/FiltersList'
+import { getFinalFilter, getPresetFilterByName } from './-utils/filterUtils'
+import type { Adjustment, EditAvatarTab, PresetFilter } from './-utils/types'
 
 const editProfileSearchSchema = z.object({
   tab: z.enum(['edit', 'filters']).catch('edit'),
@@ -95,6 +93,10 @@ function RouteComponent() {
     saturation: 100,
     hue: 0,
   })
+  const [selectedPresetName, setSelectedPresetName] =
+    useState<PresetFilter>('Normal')
+
+  const selectedFilter = getPresetFilterByName(selectedPresetName)
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -148,6 +150,8 @@ function RouteComponent() {
     }))
   }
 
+  const finalFilter = getFinalFilter(selectedFilter?.values!, adjustments)
+
   const handleTabSwitch = (tab: EditAvatarTab) => {
     navigate({
       search: {
@@ -168,15 +172,17 @@ function RouteComponent() {
     console.log(values)
   }
 
+  function onBack() {
+    setSelectedAvatar(null)
+    setSelectedPresetName('Normal')
+    setAdjustments({ brightness: 100, contrast: 100, saturation: 100, hue: 0 })
+  }
+
   if (selectedAvatar) {
     return (
       <div className="flex h-dvh flex-col">
         <header className="bg-background flex h-12 items-center justify-between">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSelectedAvatar(null)}
-          >
+          <Button variant="ghost" size="icon" onClick={onBack}>
             <HiXMark className="size-5 stroke-1" />
           </Button>
           <h1 className="text-lg leading-none font-semibold">Edit avatar</h1>
@@ -196,12 +202,8 @@ function RouteComponent() {
             style={{
               mediaStyle: {
                 // rotate: `${adjustments.hue}deg`,
-                filter: `
-      brightness(${adjustments.brightness}%)
-      contrast(${adjustments.contrast}%)
-      saturate(${adjustments.saturation}%)
-      hue-rotate(${adjustments.hue}deg)
-    `,
+                transition: 'filter 0.1s ease',
+                filter: finalFilter,
               },
             }}
           />
@@ -230,7 +232,12 @@ function RouteComponent() {
             </>
           )}
 
-          {tab === 'filters' && <FiltersList />}
+          {tab === 'filters' && (
+            <FiltersList
+              selectedPreset={selectedPresetName}
+              onSelect={setSelectedPresetName}
+            />
+          )}
         </section>
         <ul className="flex items-center justify-center border-t">
           <TabItem
