@@ -98,7 +98,17 @@ export const PRESET_FILTERS: {
 ] as const
 
 export function getPresetFilterByName(filterName: PresetFilter) {
-  return PRESET_FILTERS.find((filter) => filter.name === filterName)
+  return (
+    PRESET_FILTERS.find((filter) => filter.name === filterName) || {
+      name: 'Normal',
+      values: {
+        brightness: 100,
+        contrast: 100,
+        saturation: 100,
+        hue: 0,
+      },
+    }
+  )
 }
 
 /**

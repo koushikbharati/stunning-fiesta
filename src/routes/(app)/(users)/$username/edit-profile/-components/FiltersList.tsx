@@ -17,16 +17,15 @@ export default function FiltersList({
         return (
           <li
             key={preset.name}
-            className="flex flex-col items-center gap-2"
+            data-selected={isSelected || undefined}
+            className="text-muted-foreground data-[selected]:text-primary flex flex-col items-center gap-2 opacity-50 transition-all data-[selected]:opacity-100"
             onClick={() => onSelect(preset.name as PresetFilter)}
           >
-            <p
+            <p className="text-xs font-medium">{preset.name}</p>
+            <div
               data-selected={isSelected || undefined}
-              className="text-muted-foreground/50 data-[selected]:text-primary text-xs font-medium transition-colors"
+              className="bg-muted aspect-square size-24 overflow-hidden"
             >
-              {preset.name}
-            </p>
-            <div className="bg-muted aspect-square size-24 overflow-hidden">
               <img
                 src="https://picsum.photos/seed/picsum/100/100"
                 alt="thumbnail"

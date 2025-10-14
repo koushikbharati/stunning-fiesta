@@ -46,20 +46,19 @@ import type { FileWithProgress } from '@/types/common'
 import { readFile } from '@/utils/helpers'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { format } from 'date-fns'
-import { CalendarIcon, LucideFlipHorizontal } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
+import { CalendarIcon } from 'lucide-react'
 import {
-  HiArrowPath,
   HiChevronLeft,
+  HiOutlineArrowPath,
   HiOutlinePencilSquare,
   HiOutlineSparkles,
   HiPencilSquare,
   HiSlash,
   HiSparkles,
-  HiXMark,
 } from 'react-icons/hi2'
-import { TbCheck } from 'react-icons/tb'
+import { TbCheck, TbFlipVertical } from 'react-icons/tb'
 import TabItem from './-components/TabItem'
 import Cropper, { type Area, type Point } from 'react-easy-crop'
 import { Slider } from '@/components/ui/slider'
@@ -69,10 +68,28 @@ import { getFinalFilter, getPresetFilterByName } from './-utils/filterUtils'
 import type { Adjustment, EditAvatarTab, PresetFilter } from './-utils/types'
 
 const editProfileSearchSchema = z.object({
-  tab: z.enum(['edit', 'filters']).catch('edit'),
+  tab: z.enum(['edit', 'filters']).catch('edit').optional(),
   adjustment: z
     .enum(['brightness', 'contrast', 'saturation', 'hue'])
-    .catch('brightness'),
+    .catch('brightness')
+    .optional(),
+  preset: z
+    .enum([
+      'Normal',
+      'Vintage',
+      'Cool Blue',
+      'Noir',
+      'Dreamy',
+      'Inverted',
+      'Sepia Tone',
+      'Pop Art',
+      'Cyberpunk',
+    ])
+    .catch('Normal')
+    .optional(),
+  zoom: z.number().min(1).max(3).catch(1).optional(),
+  rotation: z.number().min(0).max(360).catch(0).optional(),
+  flip: z.object({ x: z.boolean(), y: z.boolean() }).optional(),
 })
 
 export const Route = createFileRoute('/(app)/(users)/$username/edit-profile/')({
@@ -83,25 +100,28 @@ export const Route = createFileRoute('/(app)/(users)/$username/edit-profile/')({
 function RouteComponent() {
   const username = Route.useParams().username
   const navigate = Route.useNavigate()
-  const { tab, adjustment } = Route.useSearch()
+  const {
+    tab,
+    adjustment = 'brightness',
+    preset = 'Normal',
+    zoom,
+    rotation = 0,
+    flip = { x: false, y: false },
+  } = Route.useSearch()
+
   const [openAvatarDialog, setOpenAvatarDialog] = useState(false)
   const [selectedAvatar, setSelectedAvatar] = useState<FileWithProgress | null>(
     null
   )
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1)
   const [adjustments, setAdjustments] = useState({
     brightness: 100,
     contrast: 100,
     saturation: 100,
     hue: 0,
   })
-  const [selectedPresetName, setSelectedPresetName] =
-    useState<PresetFilter>('Normal')
-  const [rotation, setRotation] = useState(0)
-  const [flip, setFlip] = useState({ x: false, y: false })
 
-  const selectedFilter = getPresetFilterByName(selectedPresetName)
+  const selectedFilter = getPresetFilterByName(preset as PresetFilter)
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -124,7 +144,8 @@ function RouteComponent() {
     setSelectedAvatar(newFile)
     navigate({
       search: {
-        tab: 'edit',
+        tab: 'filters',
+        preset: 'Normal',
         adjustment: 'brightness',
       },
     })
@@ -135,14 +156,44 @@ function RouteComponent() {
     }
   }
 
+  const handleZoomChange = (zoom: number) => {
+    navigate({
+      search: {
+        tab,
+        adjustment,
+        preset,
+        zoom,
+        flip,
+        rotation,
+      },
+    })
+  }
+
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
     console.log(croppedArea, croppedAreaPixels)
+  }
+
+  const handlePresetSelect = (name: PresetFilter) => {
+    navigate({
+      search: {
+        tab,
+        adjustment,
+        zoom,
+        rotation,
+        flip,
+        preset: name,
+      },
+    })
   }
 
   const handleAdjustmentSelect = (name: Adjustment) => {
     navigate({
       search: {
         tab,
+        preset,
+        zoom,
+        rotation,
+        flip,
         adjustment: name,
       },
     })
@@ -156,23 +207,42 @@ function RouteComponent() {
   }
 
   const handleRotateChange = () => {
-    setRotation((prev) => prev + 90)
+    navigate({
+      search: {
+        tab,
+        adjustment,
+        preset,
+        zoom,
+        flip,
+        rotation: (rotation + 90) % 360,
+      },
+    })
   }
 
   const handleFlipChange = (axis: 'x' | 'y') => {
-    setFlip((prev) => ({
-      ...prev,
-      [axis]: !prev[axis],
-    }))
+    navigate({
+      search: {
+        tab,
+        adjustment,
+        preset,
+        zoom,
+        rotation,
+        flip: { ...flip, [axis]: !flip[axis] },
+      },
+    })
   }
 
-  const finalFilter = getFinalFilter(selectedFilter?.values!, adjustments)
+  const finalFilter = getFinalFilter(adjustments, selectedFilter.values)
 
   const handleTabSwitch = (tab: EditAvatarTab) => {
     navigate({
       search: {
         tab,
         adjustment,
+        preset,
+        zoom,
+        rotation,
+        flip,
       },
     })
   }
@@ -190,23 +260,31 @@ function RouteComponent() {
 
   function onBack() {
     setSelectedAvatar(null)
-    setSelectedPresetName('Normal')
     setAdjustments({ brightness: 100, contrast: 100, saturation: 100, hue: 0 })
-    setZoom(1)
     setCrop({ x: 0, y: 0 })
-    setRotation(0)
-    setFlip({ x: false, y: false })
+    navigate({
+      search: {
+        tab: undefined,
+        adjustment: undefined,
+        preset: undefined,
+        zoom: undefined,
+        rotation: undefined,
+        flip: undefined,
+      },
+    })
   }
 
   if (selectedAvatar) {
     return (
       <div className="flex h-dvh flex-col">
-        <header className="bg-background flex h-12 items-center justify-between px-2">
-          <Button variant="ghost" size="icon-sm" onClick={onBack}>
-            <HiXMark className="size-5 stroke-1" />
+        <header className="bg-background flex h-12 items-center justify-between">
+          <Button variant="ghost" size="sm" onClick={onBack}>
+            Back
           </Button>
           <h1 className="text-lg leading-none font-semibold">Edit avatar</h1>
-          <Button className="invisible" variant="ghost" size="icon-sm"></Button>
+          <Button variant="ghost" size="sm">
+            Save
+          </Button>
         </header>
         <article className="relative aspect-square overflow-hidden">
           <Cropper
@@ -217,13 +295,17 @@ function RouteComponent() {
             cropShape="round"
             objectFit="cover"
             onCropChange={setCrop}
-            onZoomChange={setZoom}
+            onZoomChange={handleZoomChange}
             onCropComplete={onCropComplete}
             style={{
+              containerStyle: {
+                transform: `scale(${flip.x ? -1 : 1}, ${flip.y ? -1 : 1})`,
+                transition: 'transform 0.2s ease',
+              },
               mediaStyle: {
+                filter: finalFilter,
                 rotate: `${rotation}deg`,
                 transition: 'filter 0.1s ease, rotate 0.2s ease',
-                filter: finalFilter,
               },
             }}
           />
@@ -233,7 +315,7 @@ function RouteComponent() {
             size="icon-sm"
             onClick={() => handleFlipChange('x')}
           >
-            <LucideFlipHorizontal className="size-5" />
+            <TbFlipVertical className="fill-primary size-5" strokeWidth={1.5} />
           </Button>
           <Button
             className="absolute right-4 bottom-4"
@@ -241,7 +323,7 @@ function RouteComponent() {
             size="icon-sm"
             onClick={handleRotateChange}
           >
-            <HiArrowPath className="size-5" />
+            <HiOutlineArrowPath className="size-5" strokeWidth={1.5} />
           </Button>
         </article>
         <section className="flex flex-1 flex-col justify-center">
@@ -270,23 +352,12 @@ function RouteComponent() {
 
           {tab === 'filters' && (
             <FiltersList
-              selectedPreset={selectedPresetName}
-              onSelect={setSelectedPresetName}
+              selectedPreset={preset as PresetFilter}
+              onSelect={handlePresetSelect}
             />
           )}
         </section>
         <ul className="_border-t flex items-center justify-center">
-          <TabItem
-            onClick={() => handleTabSwitch('edit')}
-            isActive={tab === 'edit'}
-          >
-            {tab === 'edit' ? (
-              <HiPencilSquare className="size-5" />
-            ) : (
-              <HiOutlinePencilSquare className="size-5" />
-            )}
-            Edit
-          </TabItem>
           <TabItem
             onClick={() => handleTabSwitch('filters')}
             isActive={tab === 'filters'}
@@ -297,6 +368,17 @@ function RouteComponent() {
               <HiOutlineSparkles className="size-5" />
             )}
             Filters
+          </TabItem>
+          <TabItem
+            onClick={() => handleTabSwitch('edit')}
+            isActive={tab === 'edit'}
+          >
+            {tab === 'edit' ? (
+              <HiPencilSquare className="size-5" />
+            ) : (
+              <HiOutlinePencilSquare className="size-5" />
+            )}
+            Edit
           </TabItem>
         </ul>
       </div>
