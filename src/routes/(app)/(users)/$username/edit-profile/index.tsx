@@ -49,26 +49,12 @@ import { format } from 'date-fns'
 import { useRef, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { CalendarIcon } from 'lucide-react'
-import {
-  HiChevronLeft,
-  HiOutlineArrowPath,
-  HiOutlinePencilSquare,
-  HiOutlineSparkles,
-  HiPencilSquare,
-  HiSlash,
-  HiSparkles,
-} from 'react-icons/hi2'
-import { TbCheck, TbFlipVertical } from 'react-icons/tb'
-import TabItem from './-components/TabItem'
-import Cropper, { type Area, type Point } from 'react-easy-crop'
-import { Slider } from '@/components/ui/slider'
-import AdjustmentList from './-components/AdjustmentList'
-import FiltersList from './-components/FiltersList'
-import { getFinalFilter, getPresetFilterByName } from './-utils/filterUtils'
-import type { Adjustment, EditAvatarTab, PresetFilter } from './-utils/types'
+import { HiChevronLeft, HiSlash } from 'react-icons/hi2'
+import { TbCheck } from 'react-icons/tb'
+import EditAvatarScreen from './-components/EditAvatarScreen'
 
 const editProfileSearchSchema = z.object({
-  tab: z.enum(['edit', 'filters']).catch('edit').optional(),
+  tab: z.enum(['edit', 'filters']).catch('filters').optional(),
   adjustment: z
     .enum(['brightness', 'contrast', 'saturation', 'hue'])
     .catch('brightness')
@@ -101,28 +87,11 @@ export const Route = createFileRoute('/(app)/(users)/$username/edit-profile/')({
 function RouteComponent() {
   const username = Route.useParams().username
   const navigate = Route.useNavigate()
-  const {
-    tab,
-    adjustment = 'brightness',
-    preset = 'Normal',
-    crop = { x: 0, y: 0 },
-    zoom,
-    rotation = 0,
-    flip = { x: false, y: false },
-  } = Route.useSearch()
 
   const [openAvatarDialog, setOpenAvatarDialog] = useState(false)
   const [selectedAvatar, setSelectedAvatar] = useState<FileWithProgress | null>(
     null
   )
-  const [adjustments, setAdjustments] = useState({
-    brightness: 100,
-    contrast: 100,
-    saturation: 100,
-    hue: 0,
-  })
-
-  const selectedFilter = getPresetFilterByName(preset as PresetFilter)
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -157,117 +126,6 @@ function RouteComponent() {
     }
   }
 
-  const handleCropChange = (crop: Point) => {
-    navigate({
-      search: {
-        tab,
-        adjustment,
-        preset,
-        crop,
-        zoom,
-        flip,
-        rotation,
-      },
-    })
-  }
-
-  const handleZoomChange = (zoom: number) => {
-    navigate({
-      search: {
-        tab,
-        adjustment,
-        preset,
-        crop,
-        zoom,
-        flip,
-        rotation,
-      },
-    })
-  }
-
-  const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
-    console.log(croppedArea, croppedAreaPixels)
-  }
-
-  const handlePresetSelect = (name: PresetFilter) => {
-    navigate({
-      search: {
-        tab,
-        adjustment,
-        crop,
-        zoom,
-        rotation,
-        flip,
-        preset: name,
-      },
-    })
-  }
-
-  const handleAdjustmentSelect = (name: Adjustment) => {
-    navigate({
-      search: {
-        tab,
-        preset,
-        crop,
-        zoom,
-        rotation,
-        flip,
-        adjustment: name,
-      },
-    })
-  }
-
-  const handleAdjustmentChange = (name: Adjustment, value: number) => {
-    setAdjustments((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
-  const handleRotateChange = () => {
-    navigate({
-      search: {
-        tab,
-        adjustment,
-        preset,
-        crop,
-        zoom,
-        flip,
-        rotation: (rotation + 90) % 360,
-      },
-    })
-  }
-
-  const handleFlipChange = (axis: 'x' | 'y') => {
-    navigate({
-      search: {
-        tab,
-        adjustment,
-        preset,
-        crop,
-        zoom,
-        rotation,
-        flip: { ...flip, [axis]: !flip[axis] },
-      },
-    })
-  }
-
-  const finalFilter = getFinalFilter(adjustments, selectedFilter.values)
-
-  const handleTabSwitch = (tab: EditAvatarTab) => {
-    navigate({
-      search: {
-        tab,
-        adjustment,
-        preset,
-        crop,
-        zoom,
-        rotation,
-        flip,
-      },
-    })
-  }
-
   const form = useForm()
 
   const [_, watchedBio] = useWatch({
@@ -279,130 +137,12 @@ function RouteComponent() {
     console.log(values)
   }
 
-  function onBack() {
-    setSelectedAvatar(null)
-    setAdjustments({ brightness: 100, contrast: 100, saturation: 100, hue: 0 })
-    navigate({
-      search: {
-        tab: undefined,
-        adjustment: undefined,
-        preset: undefined,
-        crop: undefined,
-        zoom: undefined,
-        rotation: undefined,
-        flip: undefined,
-      },
-    })
-  }
-
   if (selectedAvatar) {
     return (
-      <div className="flex h-dvh flex-col">
-        <header className="bg-background flex h-12 items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={onBack}>
-            Back
-          </Button>
-          <h1 className="text-lg leading-none font-semibold">Edit avatar</h1>
-          <Button variant="ghost" size="sm">
-            Save
-          </Button>
-        </header>
-        <article className="relative aspect-square overflow-hidden">
-          <Cropper
-            image={selectedAvatar.dataUrl}
-            crop={crop}
-            zoom={zoom}
-            aspect={1 / 1}
-            cropShape="round"
-            objectFit="cover"
-            onCropChange={handleCropChange}
-            onZoomChange={handleZoomChange}
-            onCropComplete={onCropComplete}
-            style={{
-              containerStyle: {
-                transform: `scale(${flip.x ? -1 : 1}, ${flip.y ? -1 : 1})`,
-                transition: 'transform 0.2s ease',
-              },
-              mediaStyle: {
-                filter: finalFilter,
-                rotate: `${rotation}deg`,
-                transition: 'filter 0.1s ease, rotate 0.2s ease',
-              },
-            }}
-          />
-          <Button
-            className="absolute bottom-4 left-4"
-            variant="outline"
-            size="icon-sm"
-            onClick={() => handleFlipChange('x')}
-          >
-            <TbFlipVertical className="fill-primary size-5" strokeWidth={1.5} />
-          </Button>
-          <Button
-            className="absolute right-4 bottom-4"
-            variant="outline"
-            size="icon-sm"
-            onClick={handleRotateChange}
-          >
-            <HiOutlineArrowPath className="size-5" strokeWidth={1.5} />
-          </Button>
-        </article>
-        <section className="flex flex-1 flex-col justify-center">
-          {tab === 'edit' && (
-            <>
-              <AdjustmentList
-                adjustments={adjustments}
-                selectedAdjustment={adjustment}
-                onSelect={handleAdjustmentSelect}
-              />
-              <div className="p-4">
-                <Slider
-                  key={adjustment}
-                  name={adjustment}
-                  defaultValue={[adjustments[adjustment]]}
-                  min={0}
-                  max={adjustment === 'hue' ? 360 : 200}
-                  step={1}
-                  onValueChange={(value) =>
-                    handleAdjustmentChange(adjustment, value[0])
-                  }
-                />
-              </div>
-            </>
-          )}
-
-          {tab === 'filters' && (
-            <FiltersList
-              selectedPreset={preset as PresetFilter}
-              onSelect={handlePresetSelect}
-            />
-          )}
-        </section>
-        <ul className="_border-t flex items-center justify-center">
-          <TabItem
-            onClick={() => handleTabSwitch('filters')}
-            isActive={tab === 'filters'}
-          >
-            {tab === 'filters' ? (
-              <HiSparkles className="size-5" />
-            ) : (
-              <HiOutlineSparkles className="size-5" />
-            )}
-            Filters
-          </TabItem>
-          <TabItem
-            onClick={() => handleTabSwitch('edit')}
-            isActive={tab === 'edit'}
-          >
-            {tab === 'edit' ? (
-              <HiPencilSquare className="size-5" />
-            ) : (
-              <HiOutlinePencilSquare className="size-5" />
-            )}
-            Edit
-          </TabItem>
-        </ul>
-      </div>
+      <EditAvatarScreen
+        imageUrl={selectedAvatar.dataUrl}
+        onBack={() => setSelectedAvatar(null)}
+      />
     )
   }
 
