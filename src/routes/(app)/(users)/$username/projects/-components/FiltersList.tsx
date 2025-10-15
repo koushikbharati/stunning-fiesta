@@ -27,6 +27,7 @@ export default function FiltersList({
     <div className="flex items-center gap-2 px-4 py-2">
       {FILTERS.map((item) => (
         <Button
+          key={item.value}
           size="sm"
           variant={filter === item.value ? 'default' : 'outline'}
           onClick={() => onFilterChange(item.value)}
