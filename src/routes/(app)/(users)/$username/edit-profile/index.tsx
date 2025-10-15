@@ -87,6 +87,7 @@ const editProfileSearchSchema = z.object({
     ])
     .catch('Normal')
     .optional(),
+  crop: z.object({ x: z.number(), y: z.number() }).optional(),
   zoom: z.number().min(1).max(3).catch(1).optional(),
   rotation: z.number().min(0).max(360).catch(0).optional(),
   flip: z.object({ x: z.boolean(), y: z.boolean() }).optional(),
@@ -104,6 +105,7 @@ function RouteComponent() {
     tab,
     adjustment = 'brightness',
     preset = 'Normal',
+    crop = { x: 0, y: 0 },
     zoom,
     rotation = 0,
     flip = { x: false, y: false },
@@ -113,7 +115,6 @@ function RouteComponent() {
   const [selectedAvatar, setSelectedAvatar] = useState<FileWithProgress | null>(
     null
   )
-  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [adjustments, setAdjustments] = useState({
     brightness: 100,
     contrast: 100,
@@ -156,12 +157,27 @@ function RouteComponent() {
     }
   }
 
+  const handleCropChange = (crop: Point) => {
+    navigate({
+      search: {
+        tab,
+        adjustment,
+        preset,
+        crop,
+        zoom,
+        flip,
+        rotation,
+      },
+    })
+  }
+
   const handleZoomChange = (zoom: number) => {
     navigate({
       search: {
         tab,
         adjustment,
         preset,
+        crop,
         zoom,
         flip,
         rotation,
@@ -178,6 +194,7 @@ function RouteComponent() {
       search: {
         tab,
         adjustment,
+        crop,
         zoom,
         rotation,
         flip,
@@ -191,6 +208,7 @@ function RouteComponent() {
       search: {
         tab,
         preset,
+        crop,
         zoom,
         rotation,
         flip,
@@ -212,6 +230,7 @@ function RouteComponent() {
         tab,
         adjustment,
         preset,
+        crop,
         zoom,
         flip,
         rotation: (rotation + 90) % 360,
@@ -225,6 +244,7 @@ function RouteComponent() {
         tab,
         adjustment,
         preset,
+        crop,
         zoom,
         rotation,
         flip: { ...flip, [axis]: !flip[axis] },
@@ -240,6 +260,7 @@ function RouteComponent() {
         tab,
         adjustment,
         preset,
+        crop,
         zoom,
         rotation,
         flip,
@@ -261,12 +282,12 @@ function RouteComponent() {
   function onBack() {
     setSelectedAvatar(null)
     setAdjustments({ brightness: 100, contrast: 100, saturation: 100, hue: 0 })
-    setCrop({ x: 0, y: 0 })
     navigate({
       search: {
         tab: undefined,
         adjustment: undefined,
         preset: undefined,
+        crop: undefined,
         zoom: undefined,
         rotation: undefined,
         flip: undefined,
@@ -294,7 +315,7 @@ function RouteComponent() {
             aspect={1 / 1}
             cropShape="round"
             objectFit="cover"
-            onCropChange={setCrop}
+            onCropChange={handleCropChange}
             onZoomChange={handleZoomChange}
             onCropComplete={onCropComplete}
             style={{
