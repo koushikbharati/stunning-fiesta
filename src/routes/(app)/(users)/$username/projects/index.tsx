@@ -14,7 +14,18 @@ export const Route = createFileRoute('/(app)/(users)/$username/projects/')({
 })
 
 function RouteComponent() {
+  const navigate = Route.useNavigate()
+  const username = Route.useParams().username
   const [filter, setFilter] = useState('latest')
+
+  const handleAddProject = () => {
+    navigate({
+      to: '/$username/projects/add',
+      params: {
+        username,
+      },
+    })
+  }
 
   if (!PROJECTS.length)
     return (
@@ -31,7 +42,7 @@ function RouteComponent() {
   return (
     <MainLayout>
       <ProfileLayout>
-        <Title title="Projects" />
+        <Title title="Projects" onAdd={handleAddProject} />
         <div>
           <FiltersList
             filter={filter}
@@ -65,7 +76,7 @@ function RouteComponent() {
                 </div>
                 <Button
                   className="z-10 self-center"
-                  size="icon"
+                  size="icon-sm"
                   variant="ghost"
                 >
                   {project.featured ? (

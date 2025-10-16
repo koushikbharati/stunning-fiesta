@@ -19,6 +19,7 @@ import { Route as appusersUsernameArticlesRouteImport } from './routes/(app)/(us
 import { Route as appusersUsernameConnectionsRouteRouteImport } from './routes/(app)/(users)/$username/connections/route'
 import { Route as appusersUsernameProjectsIndexRouteImport } from './routes/(app)/(users)/$username/projects/index'
 import { Route as appusersUsernameEditProfileIndexRouteImport } from './routes/(app)/(users)/$username/edit-profile/index'
+import { Route as appusersUsernameProjectsAddRouteImport } from './routes/(app)/(users)/$username/projects/add'
 import { Route as appusersUsernameProjectsProjectIdRouteImport } from './routes/(app)/(users)/$username/projects/$projectId'
 import { Route as appusersUsernameConnectionsFollowingRouteImport } from './routes/(app)/(users)/$username/connections/following'
 import { Route as appusersUsernameConnectionsFollowersRouteImport } from './routes/(app)/(users)/$username/connections/followers'
@@ -78,6 +79,12 @@ const appusersUsernameEditProfileIndexRoute =
     path: '/$username/edit-profile/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const appusersUsernameProjectsAddRoute =
+  appusersUsernameProjectsAddRouteImport.update({
+    id: '/(app)/(users)/$username/projects/add',
+    path: '/$username/projects/add',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const appusersUsernameProjectsProjectIdRoute =
   appusersUsernameProjectsProjectIdRouteImport.update({
     id: '/(app)/(users)/$username/projects/$projectId',
@@ -109,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/$username/connections/followers': typeof appusersUsernameConnectionsFollowersRoute
   '/$username/connections/following': typeof appusersUsernameConnectionsFollowingRoute
   '/$username/projects/$projectId': typeof appusersUsernameProjectsProjectIdRoute
+  '/$username/projects/add': typeof appusersUsernameProjectsAddRoute
   '/$username/edit-profile': typeof appusersUsernameEditProfileIndexRoute
   '/$username/projects': typeof appusersUsernameProjectsIndexRoute
 }
@@ -124,6 +132,7 @@ export interface FileRoutesByTo {
   '/$username/connections/followers': typeof appusersUsernameConnectionsFollowersRoute
   '/$username/connections/following': typeof appusersUsernameConnectionsFollowingRoute
   '/$username/projects/$projectId': typeof appusersUsernameProjectsProjectIdRoute
+  '/$username/projects/add': typeof appusersUsernameProjectsAddRoute
   '/$username/edit-profile': typeof appusersUsernameEditProfileIndexRoute
   '/$username/projects': typeof appusersUsernameProjectsIndexRoute
 }
@@ -140,6 +149,7 @@ export interface FileRoutesById {
   '/(app)/(users)/$username/connections/followers': typeof appusersUsernameConnectionsFollowersRoute
   '/(app)/(users)/$username/connections/following': typeof appusersUsernameConnectionsFollowingRoute
   '/(app)/(users)/$username/projects/$projectId': typeof appusersUsernameProjectsProjectIdRoute
+  '/(app)/(users)/$username/projects/add': typeof appusersUsernameProjectsAddRoute
   '/(app)/(users)/$username/edit-profile/': typeof appusersUsernameEditProfileIndexRoute
   '/(app)/(users)/$username/projects/': typeof appusersUsernameProjectsIndexRoute
 }
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/$username/connections/followers'
     | '/$username/connections/following'
     | '/$username/projects/$projectId'
+    | '/$username/projects/add'
     | '/$username/edit-profile'
     | '/$username/projects'
   fileRoutesByTo: FileRoutesByTo
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/$username/connections/followers'
     | '/$username/connections/following'
     | '/$username/projects/$projectId'
+    | '/$username/projects/add'
     | '/$username/edit-profile'
     | '/$username/projects'
   id:
@@ -187,6 +199,7 @@ export interface FileRouteTypes {
     | '/(app)/(users)/$username/connections/followers'
     | '/(app)/(users)/$username/connections/following'
     | '/(app)/(users)/$username/projects/$projectId'
+    | '/(app)/(users)/$username/projects/add'
     | '/(app)/(users)/$username/edit-profile/'
     | '/(app)/(users)/$username/projects/'
   fileRoutesById: FileRoutesById
@@ -201,6 +214,7 @@ export interface RootRouteChildren {
   appusersUsernameExperienceRoute: typeof appusersUsernameExperienceRoute
   appusersUsernameIndexRoute: typeof appusersUsernameIndexRoute
   appusersUsernameProjectsProjectIdRoute: typeof appusersUsernameProjectsProjectIdRoute
+  appusersUsernameProjectsAddRoute: typeof appusersUsernameProjectsAddRoute
   appusersUsernameEditProfileIndexRoute: typeof appusersUsernameEditProfileIndexRoute
   appusersUsernameProjectsIndexRoute: typeof appusersUsernameProjectsIndexRoute
 }
@@ -277,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appusersUsernameEditProfileIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(app)/(users)/$username/projects/add': {
+      id: '/(app)/(users)/$username/projects/add'
+      path: '/$username/projects/add'
+      fullPath: '/$username/projects/add'
+      preLoaderRoute: typeof appusersUsernameProjectsAddRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(app)/(users)/$username/projects/$projectId': {
       id: '/(app)/(users)/$username/projects/$projectId'
       path: '/$username/projects/$projectId'
@@ -331,6 +352,7 @@ const rootRouteChildren: RootRouteChildren = {
   appusersUsernameIndexRoute: appusersUsernameIndexRoute,
   appusersUsernameProjectsProjectIdRoute:
     appusersUsernameProjectsProjectIdRoute,
+  appusersUsernameProjectsAddRoute: appusersUsernameProjectsAddRoute,
   appusersUsernameEditProfileIndexRoute: appusersUsernameEditProfileIndexRoute,
   appusersUsernameProjectsIndexRoute: appusersUsernameProjectsIndexRoute,
 }
