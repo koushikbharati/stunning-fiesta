@@ -6,7 +6,6 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 import {
   InputGroup,
   InputGroupAddon,
@@ -35,7 +34,7 @@ function RouteComponent() {
     },
   })
 
-  const { fields, append, remove } = useFieldArray({
+  const sectionFields = useFieldArray({
     control: form.control,
     name: 'sections',
   })
@@ -46,12 +45,17 @@ function RouteComponent() {
   })
 
   const handleAddSection = () => {
-    append({ heading: '', content: '' })
+    sectionFields.append(
+      { heading: '', content: '' },
+      {
+        shouldFocus: false,
+      }
+    )
   }
 
   const handleRemoveSection = (index: number) => {
     if (index === 0) return
-    remove(index)
+    sectionFields.remove(index)
   }
 
   function onSubmit(values: any) {
@@ -102,9 +106,9 @@ function RouteComponent() {
               <p className="text-muted-foreground">Add a thumbnail</p>
             </div>
 
-            <div className="space-y-6">
-              <h2 className="mb-2 text-lg font-semibold">Sections</h2>
-              {fields.map((field, index) => (
+            <div className="space-y-4">
+              <h2 className="text-lg/none font-semibold">Sections</h2>
+              {sectionFields.fields.map((field, index) => (
                 <div
                   key={field.id}
                   className="_bg-background _rounded-md _border _p-4 _shadow-xs space-y-2"
@@ -129,15 +133,14 @@ function RouteComponent() {
                       )}
                     />
 
-                    {index !== 0 && (
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => handleRemoveSection(index)}
-                      >
-                        <HiOutlineTrash className="size-5" />
-                      </Button>
-                    )}
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      disabled={index === 0}
+                      onClick={() => handleRemoveSection(index)}
+                    >
+                      <HiOutlineTrash className="size-5" />
+                    </Button>
                   </div>
 
                   <FormField
@@ -164,17 +167,16 @@ function RouteComponent() {
                   />
                 </div>
               ))}
+              <Button
+                type="submit"
+                className="w-full"
+                variant="outline"
+                onClick={handleAddSection}
+              >
+                <HiOutlinePlusCircle className="size-5" />
+                Add a new section
+              </Button>
             </div>
-
-            <Button
-              type="submit"
-              className="w-full"
-              variant="outline"
-              onClick={handleAddSection}
-            >
-              <HiOutlinePlusCircle className="size-5" />
-              Add a new section
-            </Button>
           </form>
         </Form>
       </section>
