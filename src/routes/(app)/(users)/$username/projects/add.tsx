@@ -6,6 +6,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
   InputGroup,
   InputGroupAddon,
@@ -15,20 +16,43 @@ import {
 } from '@/components/ui/input-group'
 import { Label } from '@/components/ui/label'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useForm, useWatch } from 'react-hook-form'
-import { HiOutlinePlus, HiOutlinePlusCircle } from 'react-icons/hi2'
+import { useFieldArray, useForm, useWatch } from 'react-hook-form'
+import {
+  HiOutlinePlus,
+  HiOutlinePlusCircle,
+  HiOutlineTrash,
+} from 'react-icons/hi2'
 
 export const Route = createFileRoute('/(app)/(users)/$username/projects/add')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const form = useForm()
-
-  const [_, watchedOverview] = useWatch({
-    control: form.control,
-    name: ['username', 'overview', 'bio'],
+  const form = useForm({
+    defaultValues: {
+      title: '',
+      sections: [{ heading: 'Overview', content: '' }],
+    },
   })
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'sections',
+  })
+
+  const watchedSections = useWatch({
+    control: form.control,
+    name: 'sections',
+  })
+
+  const handleAddSection = () => {
+    append({ heading: '', content: '' })
+  }
+
+  const handleRemoveSection = (index: number) => {
+    if (index === 0) return
+    remove(index)
+  }
 
   function onSubmit(values: any) {
     console.log(values)
@@ -49,7 +73,7 @@ function RouteComponent() {
           Save
         </Button>
       </header>
-      <section className="flex flex-1 flex-col">
+      <section className="flex flex-1 flex-col overflow-y-auto">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -57,7 +81,7 @@ function RouteComponent() {
           >
             <FormField
               control={form.control}
-              name="name"
+              name="title"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -78,38 +102,79 @@ function RouteComponent() {
               <p className="text-muted-foreground">Add a thumbnail</p>
             </div>
 
-            <div className="space-y-2">
-              <FormField
-                control={form.control}
-                name="overview"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <InputGroup>
-                        <InputGroupTextarea
-                          placeholder="Write a short overview"
-                          {...field}
-                        />
-                        <InputGroupAddon align="block-start">
-                          <Label className="text-foreground">Overview</Label>
-                        </InputGroupAddon>
-                        <InputGroupAddon className="" align="block-end">
-                          <InputGroupText className="text-muted-foreground ml-auto text-xs">
-                            {watchedOverview?.length || 0} / 100
-                          </InputGroupText>
-                        </InputGroupAddon>
-                      </InputGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="space-y-6">
+              <h2 className="mb-2 text-lg font-semibold">Sections</h2>
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="_bg-background _rounded-md _border _p-4 _shadow-xs space-y-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <FormField
+                      control={form.control}
+                      name={`sections.${index}.heading`}
+                      disabled={index === 0}
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormControl>
+                            <InputGroup>
+                              <InputGroupInput
+                                placeholder="Write a heading"
+                                {...field}
+                              />
+                            </InputGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-              <Button className="w-full" variant="outline">
-                <HiOutlinePlusCircle className="size-5" />
-                Add a new section
-              </Button>
+                    {index !== 0 && (
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => handleRemoveSection(index)}
+                      >
+                        <HiOutlineTrash className="size-5" />
+                      </Button>
+                    )}
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name={`sections.${index}.content`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <InputGroup>
+                            <InputGroupTextarea
+                              placeholder="Write some content"
+                              {...field}
+                            />
+                            <InputGroupAddon className="" align="block-end">
+                              <InputGroupText className="text-muted-foreground ml-auto text-xs">
+                                {watchedSections[index]?.content?.length} / 100
+                              </InputGroupText>
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ))}
             </div>
+
+            <Button
+              type="submit"
+              className="w-full"
+              variant="outline"
+              onClick={handleAddSection}
+            >
+              <HiOutlinePlusCircle className="size-5" />
+              Add a new section
+            </Button>
           </form>
         </Form>
       </section>
