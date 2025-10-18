@@ -145,7 +145,7 @@ export default function EditAvatarScreen({
     })
   }
 
-  const finalFilter = getFinalFilter(adjustments, selectedFilter.values)
+  const finalFilter = getFinalFilter(selectedFilter.values, adjustments)
 
   const handleTabSwitch = (tab: EditAvatarTab) => {
     navigate({

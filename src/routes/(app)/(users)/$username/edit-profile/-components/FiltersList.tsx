@@ -38,6 +38,7 @@ export default function FiltersList({
               sepia(${PRESET_FILTERS[index].values?.sepia || 0})
               grayscale(${PRESET_FILTERS[index].values?.grayscale || 0})
               blur(${PRESET_FILTERS[index].values?.blur || 0}px)
+              invert(${PRESET_FILTERS[index].values?.invert || 0})
               `,
                 }}
               />
