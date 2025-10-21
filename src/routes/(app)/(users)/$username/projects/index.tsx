@@ -52,7 +52,7 @@ function RouteComponent() {
             {PROJECTS.map((project) => (
               <li
                 key={project.id}
-                className="relative flex gap-4 border-b p-4 last:border-none"
+                className="relative flex gap-2 border-b p-4 last:border-none"
               >
                 <Link
                   to="/$username/projects/$projectId"
@@ -62,15 +62,15 @@ function RouteComponent() {
                   }}
                   className="absolute inset-0"
                 />
-                <div className="bg-accent aspect-square h-20 rounded-md"></div>
-                <div className="flex-1 space-y-1">
+                <div className="bg-accent aspect-video h-18 rounded-md"></div>
+                <div className="flex-1 space-y-1 pl-2">
                   <h3 className="line-clamp-1 leading-tight font-medium">
                     {project.name}
                   </h3>
-                  <p className="text-muted-foreground line-clamp-2 text-sm leading-tight">
+                  <p className="text-muted-foreground line-clamp-2 text-xs leading-tight">
                     Associated with {project.associated_with}
                   </p>
-                  <p className="text-muted-foreground text-sm leading-tight">
+                  <p className="text-muted-foreground text-xs leading-tight">
                     {timeAgo(project.created_at)}
                   </p>
                 </div>
@@ -113,7 +113,7 @@ const PROJECTS = [
   },
   {
     id: 3,
-    name: 'Maaza - My small win',
+    name: 'Sprite - Joke in a bottle',
     associated_with: 'Maharashtra Housing Development Corporation Limited',
     created_at: new Date(2025, 0, 1),
     thumbnail: '',

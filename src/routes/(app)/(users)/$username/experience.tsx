@@ -7,6 +7,7 @@ import {
 import Title from './-components/Title'
 import NoDataFound from './-components/no-data-found'
 import MainLayout from '../../-components/MainLayout'
+import { Badge } from '@/components/ui/badge'
 
 export const Route = createFileRoute('/(app)/(users)/$username/experience')({
   component: RouteComponent,
@@ -132,11 +133,11 @@ function RouteComponent() {
                             <p className="mt-4 text-sm whitespace-pre-line">
                               {role.description}
                             </p>
-                            <ul className="mt-6 inline-flex flex-wrap items-start gap-1">
+                            <div className="mt-6 inline-flex flex-wrap items-start gap-1">
                               {role.skills.map((skill) => (
                                 <SkillTag key={skill} skill={skill} />
                               ))}
-                            </ul>
+                            </div>
                           </li>
                         ))}
                       </ul>
@@ -190,11 +191,11 @@ function RouteComponent() {
                       <p className="mt-4 text-sm whitespace-pre-line">
                         {exp.roles[0].description}
                       </p>
-                      <ul className="mt-6 inline-flex flex-wrap items-start gap-1">
+                      <div className="mt-6 inline-flex flex-wrap items-start gap-1">
                         {exp.roles[0].skills.map((skill) => (
                           <SkillTag key={skill} skill={skill} />
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -208,11 +209,7 @@ function RouteComponent() {
 }
 
 function SkillTag({ skill }: { skill: string }) {
-  return (
-    <li className="bg-muted rounded-full px-2 py-1 text-xs whitespace-nowrap">
-      {skill}
-    </li>
-  )
+  return <Badge variant="secondary">{skill}</Badge>
 }
 
 const EXPERIENCE = [

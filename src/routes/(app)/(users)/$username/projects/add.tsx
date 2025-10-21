@@ -4,8 +4,10 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
   InputGroup,
   InputGroupAddon,
@@ -14,12 +16,25 @@ import {
   InputGroupTextarea,
 } from '@/components/ui/input-group'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useImagePreview } from '@/hooks/use-preview'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { LucideLoader } from 'lucide-react'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import {
-  HiOutlinePlus,
+  HiOutlineCloudArrowUp,
   HiOutlinePlusCircle,
   HiOutlineTrash,
+  HiOutlineXMark,
 } from 'react-icons/hi2'
 
 export const Route = createFileRoute('/(app)/(users)/$username/projects/add')({
@@ -30,9 +45,24 @@ function RouteComponent() {
   const form = useForm({
     defaultValues: {
       title: '',
+      thumbnail: undefined,
       sections: [{ heading: 'Overview', content: '' }],
+      links: [],
     },
   })
+
+  const watchedValues = useWatch({
+    control: form.control,
+  })
+
+  const {
+    isLoading: isGeneratingThumbnailPreview,
+    previewUrl: thumbnailPreview,
+  } = useImagePreview(watchedValues.thumbnail?.[0])
+
+  const handleRemoveThumbnail = () => {
+    form.setValue('thumbnail', undefined)
+  }
 
   const sectionFields = useFieldArray({
     control: form.control,
@@ -58,9 +88,23 @@ function RouteComponent() {
     sectionFields.remove(index)
   }
 
+  const linkFields = useFieldArray({
+    control: form.control,
+    name: 'links',
+  })
+
+  const handleAddLink = () => {
+    linkFields.append({ title: '', url: '' }, { shouldFocus: false })
+  }
+
+  const handleRemoveLink = (index: number) => {
+    linkFields.remove(index)
+  }
+
   function onSubmit(values: any) {
     console.log(values)
   }
+
   return (
     <div className="flex h-dvh flex-col">
       <header className="bg-background flex h-12 items-center justify-between px-2">
@@ -88,60 +132,115 @@ function RouteComponent() {
               name="title"
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <InputGroup>
-                      <InputGroupInput placeholder="Write a title" {...field} />
-                      <InputGroupAddon align="block-start">
-                        <Label className="text-foreground">Title</Label>
-                      </InputGroupAddon>
-                    </InputGroup>
+                    <Input placeholder="Write a title" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="bg-background flex aspect-video flex-col items-center justify-center gap-2 rounded-md border shadow-xs">
-              <HiOutlinePlus className="size-8" />
-              <p className="text-muted-foreground">Add a thumbnail</p>
+            <div className="grid gap-2">
+              <Label className="text-foreground">Category</Label>
+              <Select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choose a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Categories</SelectLabel>
+                    {
+                      // TODO: Fetch categories
+                      CATEGORIES.map((category) => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))
+                    }
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
+
+            <FormField
+              control={form.control}
+              name="thumbnail"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Thumbnail</FormLabel>
+                  <FormControl>
+                    {watchedValues.thumbnail ? (
+                      <div className="bg-background relative aspect-video overflow-hidden rounded-md shadow-xs">
+                        {isGeneratingThumbnailPreview ? (
+                          <ThumbnailSkeleton />
+                        ) : (
+                          <>
+                            <img
+                              src={thumbnailPreview ?? undefined}
+                              alt="thumbnail"
+                              className="h-full w-full object-cover"
+                            />
+                            <Button
+                              className="absolute top-2 right-2 flex items-center gap-2"
+                              type="button"
+                              variant="outline"
+                              size="icon-sm"
+                              onClick={handleRemoveThumbnail}
+                            >
+                              <HiOutlineXMark className="stroke-destructive size-4 stroke-2" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="relative flex aspect-video flex-col items-center justify-center rounded-md border border-dashed">
+                        <div className="bg-accent mb-2 flex size-12 items-center justify-center rounded-full">
+                          <HiOutlineCloudArrowUp className="size-6" />
+                          <input
+                            className="absolute inset-0 opacity-0"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => field.onChange(e.target.files)}
+                          />
+                        </div>
+                        <p className="font-medium">Tap to upload</p>
+                        <p className="text-muted-foreground text-xs">
+                          PNG, JPEG, WEBP or GIF (max. 5MB)
+                        </p>
+                      </div>
+                    )}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="space-y-4">
               <h2 className="text-lg/none font-semibold">Sections</h2>
               {sectionFields.fields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="_bg-background _rounded-md _border _p-4 _shadow-xs space-y-2"
+                  className="bg-card space-y-2 rounded-md border p-4 shadow-xs"
                 >
-                  <div className="flex items-center gap-2">
-                    <FormField
-                      control={form.control}
-                      name={`sections.${index}.heading`}
-                      disabled={index === 0}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormControl>
-                            <InputGroup>
-                              <InputGroupInput
-                                placeholder="Write a heading"
-                                {...field}
-                              />
-                            </InputGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      disabled={index === 0}
-                      onClick={() => handleRemoveSection(index)}
-                    >
-                      <HiOutlineTrash className="size-5" />
-                    </Button>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name={`sections.${index}.heading`}
+                    disabled={index === 0}
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormControl>
+                          <InputGroup>
+                            <InputGroupInput
+                              placeholder="Write a heading"
+                              {...field}
+                            />
+                          </InputGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <FormField
                     control={form.control}
@@ -156,7 +255,7 @@ function RouteComponent() {
                             />
                             <InputGroupAddon className="" align="block-end">
                               <InputGroupText className="text-muted-foreground ml-auto text-xs">
-                                {watchedSections[index]?.content?.length} / 100
+                                {watchedSections[index]?.content?.length} / 1000
                               </InputGroupText>
                             </InputGroupAddon>
                           </InputGroup>
@@ -165,21 +264,126 @@ function RouteComponent() {
                       </FormItem>
                     )}
                   />
+
+                  <div className="flex justify-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={index === 0}
+                      onClick={() => handleRemoveSection(index)}
+                    >
+                      <HiOutlineTrash className="size-4" />
+                      Remove
+                    </Button>
+                  </div>
                 </div>
               ))}
               <Button
-                type="submit"
+                type="button"
                 className="w-full"
                 variant="outline"
                 onClick={handleAddSection}
               >
                 <HiOutlinePlusCircle className="size-5" />
-                Add a new section
+                Add another section
               </Button>
             </div>
+
+            <div className="space-y-4">
+              <h2 className="text-lg/none font-semibold">Links</h2>
+              {linkFields.fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="bg-card space-y-2 rounded-md border p-4 shadow-xs"
+                >
+                  <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name={`links.${index}.title`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="Title" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`links.${index}.url`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="https://example.com"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleRemoveLink(index)}
+                    >
+                      <HiOutlineTrash className="size-4" />
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                type="button"
+                className="w-full"
+                variant="outline"
+                onClick={handleAddLink}
+              >
+                <HiOutlinePlusCircle className="size-5" />
+                Add External Link
+              </Button>
+            </div>
+
+            {/* <div className="space-y-4">
+              <h2 className="text-lg/none font-semibold">Contributors</h2>
+              <Button type="button" className="w-full" variant="outline">
+                <HiOutlinePlusCircle className="size-5" />
+                Add contributors
+              </Button>
+            </div> */}
           </form>
         </Form>
       </section>
     </div>
   )
 }
+
+function ThumbnailSkeleton() {
+  return (
+    <Skeleton className="absolute inset-0 flex items-center justify-center">
+      <LucideLoader className="size-6 animate-spin" />
+    </Skeleton>
+  )
+}
+
+const CATEGORIES = [
+  { label: 'Software Development', value: 'software_development' },
+  { label: 'Research / Academic', value: 'research_academic' },
+  { label: 'Creative / Design', value: 'creative_design' },
+  { label: 'Marketing / Business', value: 'marketing_business' },
+  { label: 'Product Development', value: 'product_development' },
+  { label: 'Event Planning', value: 'event_planning' },
+  { label: 'Open Source Contribution', value: 'open_source_contribution' },
+  { label: 'Content Creation / Media', value: 'content_creation_media' },
+  { label: 'Data Science / Analytics', value: 'data_science_analytics' },
+  { label: 'Education / Training', value: 'education_training' },
+  { label: 'Engineering / Hardware', value: 'engineering_hardware' },
+  { label: 'Other', value: 'other' },
+]
