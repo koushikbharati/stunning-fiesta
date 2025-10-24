@@ -67,10 +67,10 @@ function RouteComponent() {
                   <h3 className="line-clamp-1 leading-tight font-medium">
                     {project.name}
                   </h3>
-                  <p className="text-muted-foreground line-clamp-2 text-xs leading-tight">
+                  <p className="text-muted-foreground line-clamp-2 text-sm leading-tight">
                     Associated with {project.associated_with}
                   </p>
-                  <p className="text-muted-foreground text-xs leading-tight">
+                  <p className="text-muted-foreground text-sm leading-tight">
                     {timeAgo(project.created_at)}
                   </p>
                 </div>

@@ -88,18 +88,18 @@ function RouteComponent() {
     sectionFields.remove(index)
   }
 
-  const linkFields = useFieldArray({
-    control: form.control,
-    name: 'links',
-  })
+  // const linkFields = useFieldArray({
+  //   control: form.control,
+  //   name: 'links',
+  // })
 
-  const handleAddLink = () => {
-    linkFields.append({ title: '', url: '' }, { shouldFocus: false })
-  }
+  // const handleAddLink = () => {
+  //   linkFields.append({ title: '', url: '' }, { shouldFocus: false })
+  // }
 
-  const handleRemoveLink = (index: number) => {
-    linkFields.remove(index)
-  }
+  // const handleRemoveLink = (index: number) => {
+  //   linkFields.remove(index)
+  // }
 
   function onSubmit(values: any) {
     console.log(values)
@@ -289,7 +289,7 @@ function RouteComponent() {
               </Button>
             </div>
 
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
               <h2 className="text-lg/none font-semibold">Links</h2>
               {linkFields.fields.map((field, index) => (
                 <div
@@ -349,7 +349,7 @@ function RouteComponent() {
                 <HiOutlinePlusCircle className="size-5" />
                 Add External Link
               </Button>
-            </div>
+            </div> */}
 
             {/* <div className="space-y-4">
               <h2 className="text-lg/none font-semibold">Contributors</h2>
