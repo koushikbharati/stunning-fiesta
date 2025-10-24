@@ -217,7 +217,7 @@ const EXPERIENCE = [
     company_id: 101,
     company_name: 'ADSMN',
     logo_url:
-      'https://media.licdn.com/dms/image/v2/D4D0BAQEqFT_UsU4c9A/company-logo_100_100/B4DZjDjYyZHsAQ-/0/1755627491751/adsmn_logo?e=1761177600&v=beta&t=buSOlu2cv4yVSaMBAGCFroaw4EWfz1VEMXnWiCeaWjM',
+      'https://media.licdn.com/dms/image/v2/D4D0BAQEqFT_UsU4c9A/company-logo_100_100/B4DZjDjYyZHsAQ-/0/1755627491751/adsmn_logo?e=1762992000&v=beta&t=mHe-p9JAi2ek2mPvaIlOLdG62X56z9k4gxtFPhi_PlE',
     roles: [
       {
         title: 'Full Stack Developer',
@@ -264,7 +264,7 @@ const EXPERIENCE = [
     company_id: 202,
     company_name: 'Maharashtra Housing Development Corporation Limited',
     logo_url:
-      'https://media.licdn.com/dms/image/v2/D560BAQGQF4NC5Hru9Q/company-logo_100_100/company-logo_100_100/0/1688473836205?e=1761177600&v=beta&t=-frmdGMK9frA92yUqS5ZxOdmSuy5Vhk8nfKN4nFQtbM',
+      'https://media.licdn.com/dms/image/v2/D560BAQGQF4NC5Hru9Q/company-logo_100_100/company-logo_100_100/0/1688473836205?e=1762992000&v=beta&t=As2rhw8M9yecqYkHlXIXW9nq7LQd5xU65hGTYQfA66M',
     roles: [
       {
         title: 'Associate Frontend Developer',
