@@ -101,8 +101,7 @@ function RouteComponent() {
           <div className="space-y-1">
             <h2 className="text-lg/tight font-bold">{PROJECT.title}</h2>
             <p className="text-muted-foreground text-sm/tight">
-              Frontend Developer at ADSMN
-              {/* Associated with ADSMN */}
+              Associated with ADSMN
             </p>
           </div>
           <div className="flex items-center gap-2">

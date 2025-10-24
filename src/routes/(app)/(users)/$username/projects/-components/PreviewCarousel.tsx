@@ -22,7 +22,7 @@ export default function PreviewCarousel() {
   }, [api])
 
   return (
-    <Carousel setApi={setApi} className="w-full max-w-sm">
+    <Carousel setApi={setApi} className="_max-w-sm w-full">
       <CarouselContent>
         {Array.from({ length: 5 }).map((_, index) => (
           <CarouselItem key={index}>

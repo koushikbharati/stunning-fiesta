@@ -27,12 +27,14 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useImagePreview } from '@/hooks/use-preview'
+import { formatFileSize, getFileType } from '@/utils/file-utils'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { LucideLoader } from 'lucide-react'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import {
   HiOutlineCloudArrowUp,
-  HiOutlinePlusCircle,
+  HiOutlineFolder,
+  HiOutlinePlus,
   HiOutlineTrash,
   HiOutlineXMark,
 } from 'react-icons/hi2'
@@ -46,8 +48,15 @@ function RouteComponent() {
     defaultValues: {
       title: '',
       thumbnail: undefined,
+      category: '',
+      link: '',
       sections: [{ heading: 'Overview', content: '' }],
-      links: [],
+      media: [
+        {
+          file: undefined,
+          caption: '',
+        },
+      ],
     },
   })
 
@@ -69,9 +78,9 @@ function RouteComponent() {
     name: 'sections',
   })
 
-  const watchedSections = useWatch({
+  const mediaFields = useFieldArray({
     control: form.control,
-    name: 'sections',
+    name: 'media',
   })
 
   const handleAddSection = () => {
@@ -83,23 +92,30 @@ function RouteComponent() {
     )
   }
 
+  const handleAddMedia = () => {
+    mediaFields.append(
+      { file: undefined, caption: '' },
+      {
+        shouldFocus: false,
+      }
+    )
+  }
+
   const handleRemoveSection = (index: number) => {
     if (index === 0) return
     sectionFields.remove(index)
   }
 
-  // const linkFields = useFieldArray({
-  //   control: form.control,
-  //   name: 'links',
-  // })
+  const handleRemoveMedia = (index: number) => {
+    mediaFields.remove(index)
+  }
 
-  // const handleAddLink = () => {
-  //   linkFields.append({ title: '', url: '' }, { shouldFocus: false })
-  // }
-
-  // const handleRemoveLink = (index: number) => {
-  //   linkFields.remove(index)
-  // }
+  const handleRemoveMediaFile = (index: number) => {
+    mediaFields.update(index, {
+      file: undefined,
+      caption: watchedValues.media?.[index].caption ?? '',
+    })
+  }
 
   function onSubmit(values: any) {
     console.log(values)
@@ -173,7 +189,9 @@ function RouteComponent() {
                     {watchedValues.thumbnail ? (
                       <div className="bg-background relative aspect-video overflow-hidden rounded-md shadow-xs">
                         {isGeneratingThumbnailPreview ? (
-                          <ThumbnailSkeleton />
+                          <Skeleton className="absolute inset-0 flex items-center justify-center">
+                            <LucideLoader className="size-6 animate-spin" />
+                          </Skeleton>
                         ) : (
                           <>
                             <img
@@ -188,19 +206,20 @@ function RouteComponent() {
                               size="icon-sm"
                               onClick={handleRemoveThumbnail}
                             >
-                              <HiOutlineXMark className="stroke-destructive size-4 stroke-2" />
+                              <HiOutlineXMark className="size-4" />
                             </Button>
                           </>
                         )}
                       </div>
                     ) : (
-                      <div className="relative flex aspect-video flex-col items-center justify-center rounded-md border border-dashed">
+                      <label className="relative flex aspect-video flex-col items-center justify-center rounded-md border border-dashed">
                         <div className="bg-accent mb-2 flex size-12 items-center justify-center rounded-full">
                           <HiOutlineCloudArrowUp className="size-6" />
                           <input
-                            className="absolute inset-0 opacity-0"
+                            className="absolute inset-0"
                             type="file"
                             accept="image/*"
+                            hidden
                             onChange={(e) => field.onChange(e.target.files)}
                           />
                         </div>
@@ -208,7 +227,7 @@ function RouteComponent() {
                         <p className="text-muted-foreground text-xs">
                           PNG, JPEG, WEBP or GIF (max. 5MB)
                         </p>
-                      </div>
+                      </label>
                     )}
                   </FormControl>
                   <FormMessage />
@@ -216,8 +235,22 @@ function RouteComponent() {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="link"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Link</FormLabel>
+                  <FormControl>
+                    <Input placeholder="https://www.example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="space-y-4">
-              <h2 className="text-lg/none font-semibold">Sections</h2>
+              <h2 className="leading-none font-semibold">Sections</h2>
               {sectionFields.fields.map((field, index) => (
                 <div
                   key={field.id}
@@ -255,7 +288,9 @@ function RouteComponent() {
                             />
                             <InputGroupAddon className="" align="block-end">
                               <InputGroupText className="text-muted-foreground ml-auto text-xs">
-                                {watchedSections[index]?.content?.length} / 1000
+                                {watchedValues.sections?.[index]?.content
+                                  ?.length || 0}
+                                &nbsp;/ 1000
                               </InputGroupText>
                             </InputGroupAddon>
                           </InputGroup>
@@ -284,54 +319,113 @@ function RouteComponent() {
                 variant="outline"
                 onClick={handleAddSection}
               >
-                <HiOutlinePlusCircle className="size-5" />
-                Add another section
+                <HiOutlinePlus className="size-4" strokeWidth={2} />
+                Add section
               </Button>
             </div>
 
-            {/* <div className="space-y-4">
-              <h2 className="text-lg/none font-semibold">Links</h2>
-              {linkFields.fields.map((field, index) => (
+            <div className="space-y-4">
+              <h2 className="leading-none font-semibold">Media</h2>
+              {mediaFields.fields.map((field, index) => (
                 <div
                   key={field.id}
                   className="bg-card space-y-2 rounded-md border p-4 shadow-xs"
                 >
-                  <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-                    <FormField
-                      control={form.control}
-                      name={`links.${index}.title`}
-                      render={({ field }) => (
-                        <FormItem>
+                  <FormField
+                    control={form.control}
+                    name={`media.${index}.file`}
+                    render={({ field }) => {
+                      const file = watchedValues.media?.[index]?.file?.[0]
+                      const fileType = file && getFileType(file)
+
+                      const {
+                        isLoading: isGeneratingMediaPreview,
+                        previewUrl: mediaPreview,
+                      } = useImagePreview(file)
+
+                      return (
+                        <FormItem className="flex-1">
                           <FormControl>
-                            <Input placeholder="Title" {...field} />
+                            {watchedValues.media?.[index]?.file ? (
+                              <div className="rounded-md border p-4">
+                                <div className="flex items-center gap-2">
+                                  {isGeneratingMediaPreview ? (
+                                    <Skeleton className="_rounded-none flex aspect-square size-9 items-center justify-center">
+                                      <LucideLoader className="size-3.5 animate-spin" />
+                                    </Skeleton>
+                                  ) : (
+                                    <img
+                                      src={mediaPreview ?? undefined}
+                                      alt="media"
+                                      className="aspect-square size-9 object-cover"
+                                    />
+                                  )}
+
+                                  <div className="flex-1 space-y-1.5">
+                                    <p className="line-clamp-1 text-xs/none font-medium">
+                                      {file?.name}
+                                    </p>
+                                    <p className="text-muted-foreground text-xs/none">
+                                      {formatFileSize(file?.size)}
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() => handleRemoveMediaFile(index)}
+                                  >
+                                    <HiOutlineXMark className="size-4" />
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <InputGroup>
+                                <InputGroupInput
+                                  type="file"
+                                  onChange={(e) =>
+                                    field.onChange(e.target.files)
+                                  }
+                                />
+                                <InputGroupAddon>
+                                  <HiOutlineFolder className="size-4" />
+                                </InputGroupAddon>
+                              </InputGroup>
+                            )}
                           </FormControl>
                           <FormMessage />
                         </FormItem>
-                      )}
-                    />
+                      )
+                    }}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name={`links.${index}.url`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              placeholder="https://example.com"
+                  <FormField
+                    control={form.control}
+                    name={`media.${index}.caption`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <InputGroup>
+                            <InputGroupTextarea
+                              placeholder="Write a caption (optional)"
                               {...field}
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                            <InputGroupAddon className="" align="block-end">
+                              <InputGroupText className="text-muted-foreground ml-auto text-xs">
+                                {watchedValues.media?.[index]?.caption
+                                  ?.length || 0}
+                                &nbsp;/ 200
+                              </InputGroupText>
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <div className="flex justify-end">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleRemoveLink(index)}
+                      onClick={() => handleRemoveMedia(index)}
                     >
                       <HiOutlineTrash className="size-4" />
                       Remove
@@ -339,37 +433,20 @@ function RouteComponent() {
                   </div>
                 </div>
               ))}
-
               <Button
-                type="button"
                 className="w-full"
+                type="button"
                 variant="outline"
-                onClick={handleAddLink}
+                onClick={handleAddMedia}
               >
-                <HiOutlinePlusCircle className="size-5" />
-                Add External Link
+                <HiOutlinePlus className="size-4" strokeWidth={2} />
+                Add media
               </Button>
-            </div> */}
-
-            {/* <div className="space-y-4">
-              <h2 className="text-lg/none font-semibold">Contributors</h2>
-              <Button type="button" className="w-full" variant="outline">
-                <HiOutlinePlusCircle className="size-5" />
-                Add contributors
-              </Button>
-            </div> */}
+            </div>
           </form>
         </Form>
       </section>
     </div>
-  )
-}
-
-function ThumbnailSkeleton() {
-  return (
-    <Skeleton className="absolute inset-0 flex items-center justify-center">
-      <LucideLoader className="size-6 animate-spin" />
-    </Skeleton>
   )
 }
 

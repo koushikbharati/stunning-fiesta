@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
 import {
   Dialog,
   DialogClose,
@@ -35,23 +34,17 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
+  InputGroupText,
+  InputGroupTextarea,
 } from '@/components/ui/input-group'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import { Textarea } from '@/components/ui/textarea'
 import type { FileWithProgress } from '@/types/common'
 import { readFile } from '@/utils/helpers'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { format } from 'date-fns'
 import { useRef, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
-import { CalendarIcon } from 'lucide-react'
-import { HiChevronLeft, HiSlash } from 'react-icons/hi2'
 import { TbCheck } from 'react-icons/tb'
 import EditAvatarScreen from './-components/EditAvatarScreen'
+import DateInput from '@/components/ui/date-input'
 
 const editProfileSearchSchema = z.object({
   tab: z.enum(['edit', 'filters']).catch('filters').optional(),
@@ -148,14 +141,16 @@ function RouteComponent() {
 
   return (
     <div className="flex h-dvh flex-col">
-      <header className="bg-background flex h-12 items-center justify-between">
-        <Button variant="ghost" size="icon" asChild>
+      <header className="bg-background flex h-12 items-center justify-between px-2">
+        <Button variant="ghost" size="sm" asChild>
           <Link to="/$username" params={{ username }}>
-            <HiChevronLeft className="size-5 stroke-1" />
+            Back
           </Link>
         </Button>
         <h1 className="text-lg leading-none font-semibold">Edit profile</h1>
-        <Button className="invisible" variant="ghost" size="icon"></Button>
+        <Button variant="ghost" size="sm">
+          Save
+        </Button>
       </header>
       <article className="flex-1 overflow-y-auto">
         <section className="flex flex-col items-center justify-center gap-4 p-10">
@@ -280,17 +275,18 @@ function RouteComponent() {
                 <FormItem>
                   <FormLabel>Bio</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Tell us a little bit about yourself"
-                      className="resize-none"
-                      {...field}
-                    />
+                    <InputGroup>
+                      <InputGroupTextarea
+                        placeholder="Tell us a little bit about yourself"
+                        {...field}
+                      />
+                      <InputGroupAddon align="block-end">
+                        <InputGroupText className="text-muted-foreground ml-auto text-xs">
+                          {watchedBio?.length || 0} / 120
+                        </InputGroupText>
+                      </InputGroupAddon>
+                    </InputGroup>
                   </FormControl>
-                  <span className="text-muted-foreground flex items-center justify-self-end text-xs">
-                    {watchedBio?.length || 0}
-                    <HiSlash className="size-4" />
-                    150
-                  </span>
                   <FormMessage />
                 </FormItem>
               )}
@@ -315,10 +311,7 @@ function RouteComponent() {
                 <FormItem>
                   <FormLabel>Website</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="https://koushikbharati.dev"
-                      {...field}
-                    />
+                    <Input placeholder="https://example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -347,41 +340,17 @@ function RouteComponent() {
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Date of birth</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button variant="outline">
-                          {field.value ? (
-                            format(field.value, 'PPP')
-                          ) : (
-                            <span className="text-muted-foreground">
-                              Pick a date
-                            </span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date('1900-01-01')
-                        }
-                        captionLayout="dropdown"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <DateInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date('1900-01-01')
+                    }
+                  />
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            <Button className="w-full" type="submit">
-              Save changes
-            </Button>
           </form>
         </Form>
       </article>
