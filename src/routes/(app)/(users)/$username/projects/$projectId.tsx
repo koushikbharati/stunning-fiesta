@@ -1,14 +1,12 @@
 import { Button } from '@/components/ui/button'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import {
-  HiChevronLeft,
   HiMiniEye,
   HiMiniHeart,
   HiMiniUserGroup,
   HiOutlineCalendarDateRange,
   HiOutlineHeart,
   HiOutlineLink,
-  HiOutlinePencilSquare,
   HiOutlineStar,
 } from 'react-icons/hi2'
 import PreviewCarousel from './-components/PreviewCarousel'
@@ -58,17 +56,17 @@ function RouteComponent() {
   return (
     <div className="flex h-dvh flex-col">
       <header className="bg-background flex h-12 items-center justify-between">
-        <Button variant="ghost" size="icon" asChild>
+        <Button variant="ghost" size="sm" asChild>
           <Link
             to="/$username/projects"
             params={{ username: Route.useParams().username }}
           >
-            <HiChevronLeft className="size-5 stroke-1" />
+            Back
           </Link>
         </Button>
         <h1 className="text-lg leading-none font-semibold">{PROJECT.title}</h1>
-        <Button variant="ghost" size="icon">
-          <HiOutlinePencilSquare className="size-5" />
+        <Button variant="ghost" size="sm">
+          Edit
         </Button>
       </header>
       <article className="flex-1 overflow-y-auto">

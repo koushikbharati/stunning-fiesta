@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import DateInput from '@/components/ui/date-input'
 import {
   Form,
   FormControl,
@@ -26,7 +27,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useImagePreview } from '@/hooks/use-preview'
+import { useFilePreview } from '@/hooks/use-preview'
 import { formatFileSize, getFileType } from '@/utils/file-utils'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { LucideLoader } from 'lucide-react'
@@ -57,17 +58,14 @@ function RouteComponent() {
           caption: '',
         },
       ],
+      startDate: undefined,
+      endDate: undefined,
     },
   })
 
   const watchedValues = useWatch({
     control: form.control,
   })
-
-  const {
-    isLoading: isGeneratingThumbnailPreview,
-    previewUrl: thumbnailPreview,
-  } = useImagePreview(watchedValues.thumbnail?.[0])
 
   const handleRemoveThumbnail = () => {
     form.setValue('thumbnail', undefined)
@@ -182,57 +180,62 @@ function RouteComponent() {
             <FormField
               control={form.control}
               name="thumbnail"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Thumbnail</FormLabel>
-                  <FormControl>
-                    {watchedValues.thumbnail ? (
-                      <div className="bg-background relative aspect-video overflow-hidden rounded-md shadow-xs">
-                        {isGeneratingThumbnailPreview ? (
-                          <Skeleton className="absolute inset-0 flex items-center justify-center">
-                            <LucideLoader className="size-6 animate-spin" />
-                          </Skeleton>
-                        ) : (
-                          <>
-                            <img
-                              src={thumbnailPreview ?? undefined}
-                              alt="thumbnail"
-                              className="h-full w-full object-cover"
-                            />
-                            <Button
-                              className="absolute top-2 right-2 flex items-center gap-2"
-                              type="button"
-                              variant="outline"
-                              size="icon-sm"
-                              onClick={handleRemoveThumbnail}
-                            >
-                              <HiOutlineXMark className="size-4" />
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    ) : (
-                      <label className="relative flex aspect-video flex-col items-center justify-center rounded-md border border-dashed">
-                        <div className="bg-accent mb-2 flex size-12 items-center justify-center rounded-full">
-                          <HiOutlineCloudArrowUp className="size-6" />
-                          <input
-                            className="absolute inset-0"
-                            type="file"
-                            accept="image/*"
-                            hidden
-                            onChange={(e) => field.onChange(e.target.files)}
-                          />
+              render={({ field }) => {
+                const thumbnailFile = watchedValues.thumbnail?.[0]
+                const { isLoading: isGeneratingPreview, previewUrl } =
+                  useFilePreview(thumbnailFile)
+                return (
+                  <FormItem>
+                    <FormLabel>Thumbnail</FormLabel>
+                    <FormControl>
+                      {thumbnailFile ? (
+                        <div className="bg-background relative aspect-video overflow-hidden rounded-md shadow-xs">
+                          {isGeneratingPreview ? (
+                            <Skeleton className="absolute inset-0 flex items-center justify-center">
+                              <LucideLoader className="size-6 animate-spin" />
+                            </Skeleton>
+                          ) : (
+                            <>
+                              <img
+                                src={previewUrl ?? undefined}
+                                alt="thumbnail"
+                                className="h-full w-full object-cover"
+                              />
+                              <Button
+                                className="absolute top-2 right-2 flex items-center gap-2"
+                                type="button"
+                                variant="outline"
+                                size="icon-sm"
+                                onClick={handleRemoveThumbnail}
+                              >
+                                <HiOutlineXMark className="size-4" />
+                              </Button>
+                            </>
+                          )}
                         </div>
-                        <p className="font-medium">Tap to upload</p>
-                        <p className="text-muted-foreground text-xs">
-                          PNG, JPEG, WEBP or GIF (max. 5MB)
-                        </p>
-                      </label>
-                    )}
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+                      ) : (
+                        <label className="relative flex aspect-video flex-col items-center justify-center rounded-md border border-dashed">
+                          <div className="bg-accent mb-2 flex size-12 items-center justify-center rounded-full">
+                            <HiOutlineCloudArrowUp className="size-6" />
+                            <input
+                              className="absolute inset-0"
+                              type="file"
+                              accept="image/*"
+                              hidden
+                              onChange={(e) => field.onChange(e.target.files)}
+                            />
+                          </div>
+                          <p className="font-medium">Tap to upload</p>
+                          <p className="text-muted-foreground text-xs">
+                            PNG, JPEG, WEBP or GIF (max. 5MB)
+                          </p>
+                        </label>
+                      )}
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }}
             />
 
             <FormField
@@ -278,26 +281,28 @@ function RouteComponent() {
                   <FormField
                     control={form.control}
                     name={`sections.${index}.content`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <InputGroup>
-                            <InputGroupTextarea
-                              placeholder="Write some content"
-                              {...field}
-                            />
-                            <InputGroupAddon className="" align="block-end">
-                              <InputGroupText className="text-muted-foreground ml-auto text-xs">
-                                {watchedValues.sections?.[index]?.content
-                                  ?.length || 0}
-                                &nbsp;/ 1000
-                              </InputGroupText>
-                            </InputGroupAddon>
-                          </InputGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      const contentLength =
+                        watchedValues.sections?.[index]?.content?.length || 0
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <InputGroup>
+                              <InputGroupTextarea
+                                placeholder="Write some content"
+                                {...field}
+                              />
+                              <InputGroupAddon className="" align="block-end">
+                                <InputGroupText className="text-muted-foreground ml-auto text-xs">
+                                  {contentLength} / 1000
+                                </InputGroupText>
+                              </InputGroupAddon>
+                            </InputGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )
+                    }}
                   />
 
                   <div className="flex justify-end">
@@ -335,51 +340,26 @@ function RouteComponent() {
                     control={form.control}
                     name={`media.${index}.file`}
                     render={({ field }) => {
-                      const file = watchedValues.media?.[index]?.file?.[0]
-                      const fileType = file && getFileType(file)
+                      const mediaFile = watchedValues.media?.[index]?.file?.[0]
 
-                      const {
-                        isLoading: isGeneratingMediaPreview,
-                        previewUrl: mediaPreview,
-                      } = useImagePreview(file)
+                      const { isLoading, previewUrl } =
+                        useFilePreview(mediaFile)
 
                       return (
                         <FormItem className="flex-1">
                           <FormControl>
-                            {watchedValues.media?.[index]?.file ? (
-                              <div className="rounded-md border p-4">
-                                <div className="flex items-center gap-2">
-                                  {isGeneratingMediaPreview ? (
-                                    <Skeleton className="_rounded-none flex aspect-square size-9 items-center justify-center">
-                                      <LucideLoader className="size-3.5 animate-spin" />
-                                    </Skeleton>
-                                  ) : (
-                                    <img
-                                      src={mediaPreview ?? undefined}
-                                      alt="media"
-                                      className="aspect-square size-9 object-cover"
-                                    />
-                                  )}
-
-                                  <div className="flex-1 space-y-1.5">
-                                    <p className="line-clamp-1 text-xs/none font-medium">
-                                      {file?.name}
-                                    </p>
-                                    <p className="text-muted-foreground text-xs/none">
-                                      {formatFileSize(file?.size)}
-                                    </p>
-                                  </div>
-                                  <button
-                                    onClick={() => handleRemoveMediaFile(index)}
-                                  >
-                                    <HiOutlineXMark className="size-4" />
-                                  </button>
-                                </div>
-                              </div>
+                            {mediaFile ? (
+                              <MediaFilePreview
+                                isGenerating={isLoading}
+                                previewUrl={previewUrl}
+                                file={mediaFile}
+                                onRemove={() => handleRemoveMediaFile(index)}
+                              />
                             ) : (
                               <InputGroup>
                                 <InputGroupInput
                                   type="file"
+                                  accept="image/*,video/*"
                                   onChange={(e) =>
                                     field.onChange(e.target.files)
                                   }
@@ -425,6 +405,7 @@ function RouteComponent() {
                     <Button
                       variant="outline"
                       size="sm"
+                      disabled={index === 0}
                       onClick={() => handleRemoveMedia(index)}
                     >
                       <HiOutlineTrash className="size-4" />
@@ -443,9 +424,122 @@ function RouteComponent() {
                 Add media
               </Button>
             </div>
+
+            <div className="space-y-4">
+              <h2 className="leading-none font-semibold">Duration</h2>
+              <div className="bg-card space-y-2 rounded-md border p-4 shadow-xs">
+                <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 shadow-xs has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50">
+                  <input
+                    type="checkbox"
+                    className="accent-foreground data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white"
+                  />
+                  <div className="space-y-1.5">
+                    <p className="text-sm leading-none font-medium">
+                      I'm still working on this project.
+                    </p>
+                    {/* <p className="text-muted-foreground text-sm leading-none font-normal">
+                      By checking this box, end date will be disabled.
+                    </p> */}
+                  </div>
+                </Label>
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      {/* <FormLabel>Start date</FormLabel> */}
+                      <DateInput
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Start date"
+                        disabled={(date) =>
+                          date > new Date() || date < new Date('1900-01-01')
+                        }
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      {/* <FormLabel>End date</FormLabel> */}
+                      <DateInput
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="End date"
+                        disabled={(date) =>
+                          date > new Date() || date < new Date('1900-01-01')
+                        }
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
           </form>
         </Form>
       </section>
+    </div>
+  )
+}
+
+interface MediaFilePreviewProps {
+  isGenerating: boolean
+  previewUrl?: string
+  file?: File
+  onRemove?: () => void
+}
+
+function MediaFilePreview({
+  isGenerating,
+  previewUrl,
+  file,
+  onRemove,
+}: MediaFilePreviewProps) {
+  const fileType = file && getFileType(file)
+  return (
+    <div className="rounded-md border p-4">
+      <div className="flex items-center gap-2">
+        {isGenerating ? (
+          <Skeleton className="_rounded-none flex aspect-square size-9 items-center justify-center">
+            <LucideLoader className="size-3.5 animate-spin" />
+          </Skeleton>
+        ) : (
+          <div>
+            {fileType === 'image' && (
+              <img
+                src={previewUrl}
+                alt={file?.name}
+                className="size-9 rounded-md object-cover"
+              />
+            )}
+            {fileType === 'video' && (
+              <video
+                src={previewUrl}
+                muted
+                autoPlay
+                playsInline
+                loop
+                className="size-9 rounded-md object-cover"
+              />
+            )}
+          </div>
+        )}
+
+        <div className="flex-1 space-y-1.5">
+          <p className="line-clamp-1 text-xs/none font-medium">{file?.name}</p>
+          <p className="text-muted-foreground text-xs/none">
+            {file && formatFileSize(file?.size)}
+          </p>
+        </div>
+        <button onClick={onRemove}>
+          <HiOutlineXMark className="size-4" />
+        </button>
+      </div>
     </div>
   )
 }
