@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 
-export function useImagePreview(file?: File | null) {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+export function useFilePreview(file?: File) {
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     if (!file) {
-      setPreviewUrl(null)
+      setPreviewUrl(undefined)
       return
     }
 
@@ -23,7 +23,7 @@ export function useImagePreview(file?: File | null) {
 
     img.onerror = () => {
       setIsLoading(false)
-      setPreviewUrl(null)
+      setPreviewUrl(undefined)
     }
 
     return () => {
